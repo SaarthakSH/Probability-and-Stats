@@ -1,0 +1,350 @@
+---
+title: ""
+output: html_document
+---
+
+```{r libraries, message=FALSE, warning=FALSE}
+
+library(psych)
+library(FSA)
+library(kableExtra)
+library(knitr)
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(RColorBrewer)
+
+
+# Data set used
+
+P1_Car <- read_excel("DataSets/M1data_carsales.xlsx")
+
+```
+
+<P>
+
+<P><BR>
+<FONT SIZE=4, COLOR="#249F45">
+<B>INTRODUCTION</B>
+</FONT>
+
+<P>
+<FONT SIZE = 3, COLOR = "#583E1C"> <B>
+The worldwide vehicle market is anticipated to be worth over $10 trillion. More than a third of the total is likely to come from new auto sales. Volkswagen and Toyota are two of the world's major automakers in terms of revenue. Japan's car sector alone produced more than 200 billion dollars in income in 2020, and the same was true for Volkswagen. (Carlier M, 2021)
+According to the expert, the Indian market would rise faster than prior records in 2021, especially in large cities like Mumbai and Delhi. (Thakkar, K., Shyam, A. R., Mukherjee, S., & Auto, E. T, 2021)
+<BR>
+Continuous distribution refers to the probability of a random variable's possible value. It has an infinite and inexhaustible range of possible values. The probability of a continuous random variable equaling some value is always zero. Consider the weight distribution, for example. (Minitab Express, 2022)
+<BR>
+The chance of each value of a random distinct variable occurring is known as discrete distribution. A non-zero probability might be associated with any conceivable value of the random variable. Take the quantity of customer complaints, for example. (Minitab Express, 2022)
+<BR>
+The dataset we're about to utilize for this report contains information on the automobile's model, its selling location, year of sale, the type of gasoline it uses, its transmission type, previous owners, and basic automotive attributes such as engine, power, seats, kilometers driven, and price.
+</B>
+<P>
+<FONT SIZE=4, COLOR="#249F45">
+<B>ANALYSIS SECTION</B>
+</FONT>
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+First task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> Using psych select and describe function create a table and make it more representable using knitr library. </B>
+<P> </FONT>
+
+```{r First Task}
+
+P1_Car %>% select(Efficiency, Power_bhp, Seats, Km, Price) %>% 
+  psych::describe() %>% 
+  t() %>% 
+  round(2) %>% 
+  kbl() %>% 
+  kable_material_dark("hover")
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+The mean and median of efficiency, power, horsepower, and seats are quite comparable, indicating that they will have a normal distribution graph, however the mean is significantly bigger than the median for km and price, indicating that the graph will be positively skewed. The difference between the lowest and highest value for kilometers and price is huge, implying that there will be a number of outliers in both variables. We clipped off the extreme outliers to make the data more robust, therefore the trimmed data is quite near to the median/mean.
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+Second task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> Present a barplot for categorical values like location, fueltype, transmission & Owner. Also, improve that barplot by using codes to make it more representable.  </B>
+<P> </FONT>
+
+```{r Second Task}
+
+par(mfrow=c(2,2), mai = c(0.5, 1.1, 0.5, 0.5))
+
+barplot(table(P1_Car$Location),
+        horiz = T,
+        col = brewer.pal(8, "Set2"),
+        las = 1,
+        cex.names = 0.6)
+
+title(xlab = "Freq", col.lab = "#CD3B06", line = 2, cex.lab = 1.2)
+title(ylab = "Location", col.lab = "#2A4DBF", line = 5, cex.lab = 1.2)
+
+barplot(table(P1_Car$FuelType),
+        horiz = T,
+        col = brewer.pal(8, "Set2"),
+        las = 1)
+
+title(xlab = "Freq", line = 2, cex.lab = 1.2,  col.lab = "#CD3B06")
+title(ylab = "FType", line = 5, cex.lab = 1.2,  col.lab = "#2A4DBF")
+
+barplot(table(P1_Car$Transmission),
+        horiz = T,
+        col = brewer.pal(8, "Set2"),
+        las = 1)
+
+title(xlab = "Freq", line = 2, cex.lab = 1.2,  col.lab = "#CD3B06")
+title(ylab = "Transmission", line = 5, cex.lab = 1.2,  col.lab = "#2A4DBF")
+
+barplot(table(P1_Car$Owner),
+        horiz = T,
+        col = brewer.pal(8, "Set2"),
+        las = 1)
+
+title(xlab = "Freq", line = 2, cex.lab = 1.2,  col.lab = "#CD3B06")
+title(ylab = "Owner", line = 4, cex.lab = 1.2,  col.lab = "#2A4DBF")
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+The Mumbai area had the greatest automobile sales, followed by Hyderabad and Kochi. Ahmedabad had the lowest number of sales, with Bangalore coming in second. The majority of these vehicles were either gasoline or diesel powered. LPG and CNG had a low sales volume. More over 70% of the automobiles were automated, with just around 20% to 25% being manual. The majority of these automobiles' owners are first-time buyers. Owners of second and fourth hand items followed, with third hand items arriving last.
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+Third task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> Present a table for the variable location also try to find out about their cum frequency, percent & cum percentage. </B>
+<P> </FONT>
+
+```{r Third Task}
+
+loc_t1 = table(P1_Car$Location)
+loc_d1 = as.data.frame(loc_t1)
+
+names(loc_d1) = c("Location", "Frequency")
+
+loc_t2 = loc_d1 %>% 
+  mutate(CumFreq = cumsum(loc_d1$Frequency)) %>% 
+  mutate(Percentage = loc_d1$Frequency / sum(loc_d1$Frequency)*100) %>% 
+  mutate(CumPercentage = cumsum(Percentage))
+
+loc_t2 %>% 
+  knitr::kable(digits = 2, caption = "Third Tabular") %>%
+ kable_paper(full_width = FALSE, font_size = 15, "hover")
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+Mumbai is the city with the most frequency of car sales, followed by Hyderabad and lastly Pune. Based on their location, Ahmedabad and Bangalore had the lowest frequency of automobile sales. In all areas, Mumbai, Pune, and Hyderabad had percentages of automobile sales above 10%, but Ahmedabad had only 3.96 percent. It's surprising that Delhi, India's capital and one of the country's largest cities, isn't among the top three cities for auto sales.
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+Fourth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> Create a table for the variable owner also try to find out about their cum frequency, percent & cum percentage. </B>
+<P> </FONT>
+
+```{r Fourth Task}
+
+own_1 = table(P1_Car$Owner)
+own_d1 = as.data.frame(own_1)
+
+names(own_d1) = c("Owner", "Frequency")
+
+own_t1 = own_d1 %>% 
+  mutate(CumFrequency = cumsum(own_d1$Frequency)) %>% 
+  mutate(Percentage = own_d1$Frequency / sum(own_d1$Frequency)*100) %>% 
+  mutate(CumPercentage = cumsum(Percentage))
+
+own_t1 %>% 
+  knitr::kable(digits = 2, caption = "Fourth Tabular") %>%
+ kable_paper("hover")
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+The most common type of vehicle was a first-hand automobile, which had a frequency of 2921. The frequency is so high that second-hand automobile users come in second with a frequency of 916, followed by fourth-hand car users with a frequency of 782. Third-hand automobile owners had the lowest frequency of 330, which is remarkable given that fourth-hand car owners had nearly double the frequency of third-hand car owners. First-hand automobile buyers account for more than half of all car purchases, while third-hand buyers account for only 6.67 percent.
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+Fifth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> Present a boxplot and histogram for the variable Km. Also, make the graph more representable. </B>
+<P> </FONT>
+
+```{r Fifth Task}
+
+par(mfrow=c(2,1), mai= c(0.4,0.8,0.4,0.4)) 
+
+boxplot(P1_Car$Km,
+        horizontal = T,
+        col = "#C1455E",
+        main = "")
+
+hist(P1_Car$Km,
+     las = 1,
+     breaks = 25,
+     col = brewer.pal(8, "Set1"),
+     main = "",
+     ylab = "")
+
+abline(v = mean(P1_Car$Km),
+       col = "#BF2544")
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+By observing the graphical figure we can notice that the KM variable contains a significant number of outliers. In addition, when compared to the spread from the beginning to the 75th percentile, the difference of spread between the 75th and 100th percentile is enormous.
+By looking at the histogram, we can observe that the majority of the KM frequency is concentrated around the mean, which is between 55000 and 60000. The data continues to diminish after that, but it's not as compact as before, and it's more dispersed.
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+Sixth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> Graphically show a boxplot and histogram for variable Price. Also, make the graph more representable. </B>
+<P> </FONT>
+
+```{r Sixth Task}
+
+par(mfrow = c(2,1), mai= c(0.4,0.8,0.4,0.4)) 
+
+boxplot(P1_Car$Price,
+        horizontal = T,
+        col = "#C1455E",
+        main = "")
+
+hist(P1_Car$Price,
+     breaks = 25,
+     col = brewer.pal(8, "Set1"),
+     main = "",
+     ylab = "")
+
+abline(v = mean(P1_Car$Price),
+       col = "#BF2544")
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+The graphical representation clearly shows that the price variable has a large number of outliers therefore the price variable's range will be quite wide as well. Furthermore, the difference in spread between the 75th and 100th percentiles is considerable when compared to the spread from the beginning to the 75th percentile. If we trim the outliers, the data we acquire will be of poor quality because there are so many outliers. 
+The majority of the data that peaked is in the 5000 price range, and after the mean price, it's starting to drop. Data after the mean price is more spread out than data before the mean price, which is compressed.
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+Seventh task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> Graphical show a boxplot to display the variable price per location. Also, make the graph more representable.  </B>
+<P> </FONT>
+
+```{r Seventh Task}
+
+par(mai = c(0.8, 1.4, 0.3, 0.3))
+
+boxplot(P1_Car$Price ~ P1_Car$Location,
+        xlab = "Price for each car sales",
+        ylab = "",
+        horizontal = T,
+        las = 1,
+        col = brewer.pal(12, "Set3"),
+        main = "Boxplot to Represent Location based on Price")
+
+title(ylab = "Location", line = 5, col.lab = "#CD0648")
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+By observing the graphical figure we can notice that Coimbatore has the highest 100th percentile for pricing location, followed by Mumbai. There are several outliers in every area, including Pune, Chennai, Kochi, and others. The city with the fewest outliers is Ahmedabad, which is also one of the cheapest places to buy a car. Kolkata, on the other hand, is the cheapest. The cities with the most outliers are Mumbai, Kochi, and Coimbatore.
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+Eighth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> Graphically present a boxplot to display the variable Km per Owner. Also, make the graph more representable.  </B>
+<P> </FONT>
+
+```{r Eighth Task}
+
+par(mai = c(0.9, 1.6, 0.7, 0.8))
+
+boxplot(P1_Car$Km ~ P1_Car$Owner,
+        xlab = "Kilometers",
+        ylab = "Owner Type",
+        col = c("#A53C3C", "#6D3CA5", "#1C445E", "#295E1C"),
+        main = "Boxplot to Represent Owner based on KM",
+        horizontal = T)
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+By our observation it shows that the highest 100th percentile for Kilometer belongs to the third-hand owner, followed by the second-hand owner. When compared to others, first-hand has the lowest 100th percentile, but it has a large number of outliers, which means that the range will be large. Only third-hand owners had no outliers, although second and fourth-hand owners had a few. The spread is greatest between the 75th and 100th percentiles for all four categories of owners.
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+Ninth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> Using a statistical code to tabularly show the variable Km. </B>
+<P> </FONT>
+
+```{r Ninth Task}
+
+stat_varKm = boxplot.stats(P1_Car$Km)
+stat_varKm
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+We were able to determine the quartiles of the variable Km by looking at the statistical representation, with 54000 being the median, 171 being the lowest, and 129000 being the highest. We also discovered the entire number of observations, which was 4949. We were also able to discover outliers for the variable Km, which were quite many.
+
+<B><FONT SIZE = 3, COLOR = "#CA7E1B">
+Tenth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#951BCA">
+<B> A dot chart based on Ninth Task for the variable Km. Also, try to make to representable.  </B>
+<P> </FONT>
+
+```{r Tenth Task}
+
+dotchart(stat_varKm$stats, 
+         col = c("#C41C1C", "#541CC4", "#09792B", "#178D7D", "#73ADC1"),
+         main = "Dotchart for Km quartiles")
+
+```
+
+<B><FONT SIZE=3, COLOR="#EE9D33">
+We can see from the graph that the lowest quartile value is about zero, or 171, as we previously discovered, and the highest quartile value is more than 120000, or 129000, as we previously discovered. The median is around 55,000, with the 25th percentile around 30,000 and the 75th percentile around 75,000.
+
+<P>
+
+<P><BR>
+<FONT SIZE=4, COLOR="#249F45">
+<B>CONCLUSION</B>
+</FONT>
+
+<P>
+<FONT SIZE = 3, COLOR = "#583E1C">
+To highlight a few key points, the mean for kilometers and price variables is higher than the median. The city with the most automotive sales was Mumbai, with the bulk of them being gasoline and manual transmissions. In addition, the majority of the vehicles sold were first-hand. Apart from Mumbai, automobile sales were also strong in Hyderabad and Pune, with Ahmedabad having the lowest number of sales. There were a lot of outliers in the automobile sales in terms of kilometers and prices. Based on the price of automobile sales, Coimbatore has the highest 100th percentile, with a considerable number of outliers.Also, while first hand sold a lot of cars, third hand had the greatest kilometers and first hand had the most, despite having a lot of outliers. When we look at the quartile range for kilometers, we see that it normally falls between between 200 and 130000.
+<BR>
+As a result, my advice to the automobile industry is to begin focusing on automated automobiles as well. Although they are four times less than manual automobiles, they are rapidly increasing. With the majority of automobiles shifting towards electric in the future, automated cars will eventually replace manual cars. Also, it's shocking to notice that fourth-hand automobiles cost more than third-hand cars, therefore we should investigate why there are so few third-hand car sales so that we can give recommendations based on that.
+<BR>
+Finally, I obtained a better understanding of the Indian automobile industry and how to evaluate various types of data. I also learnt how to use the select and describe functions in the code, as well as how to pipe them effectively. Also, to make it appear more presentable, I added some extra knitr library features, which gave my table representation more depth.
+
+<P>
+
+<P><BR>
+<FONT SIZE=4, COLOR="#249F45">
+<B>BIBLIOGRAPHY</B>
+</FONT>
+
+<P>
+<FONT SIZE = 3, COLOR = "#583E1C">
+1) Carlier, M. (2021, November 10). Automotive industry worldwide - statistics & facts. Statista. https://www.statista.com/topics/1487/automotive-industry/#dossierKeyfigures <BR>
+2) Thakkar, K., Shyam, A. R., Mukherjee, S., & Auto, E. T. (2021, January 11). Indian car market may post record 30% growth in 2021 on low base. ETAuto.Com. https://auto.economictimes.indiatimes.com/news/passenger-vehicle/cars/indian-car-market-may-post-record-30-growth-in-2021-on-low-base/80218106 <BR>
+3) Continuous and discrete probability distributions - Minitab Express. (2022). (C) Minitab, LLC. All Rights Reserved. 2022. https://support.minitab.com/en-us/minitab-express/1/help-and-how-to/basic-statistics/probability-distributions/supporting-topics/basics/continuous-and-discrete-probability-distributions/ <BR>
+
+
+
+

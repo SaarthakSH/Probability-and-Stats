@@ -1,0 +1,652 @@
+---
+title: ""
+output: html_document
+---
+
+```{r libraries, message=FALSE, warning=FALSE}
+
+library(kableExtra)
+library(knitr)
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(RColorBrewer)
+library(magrittr) 
+library(DT)
+
+# Data set for the assignment. 
+
+Proj3_DS <- read_excel("Datasets/M3ProjectData.xlsx")
+
+```
+
+<P>
+<FONT SIZE=4, COLOR="#8710AB">
+<B>INTRODUCTION</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#5A5E21"> 
+<BR>
+In statistics, confidence intervals are often used to represent a range of data that are likely to comprise a population percentage with a certain degree of certainty. (Padilla, J., 2021) <BR>
+Confidence intervals are often used in biology. A researcher, for instance, would be curious in the bodyweight of a particular variety of frog in Quebec. Because weighing thousands of individual frogs would take too long, the scientist may instead collect a simple random sample of 50 frogs and determine the mean and standard deviation of the frog in the research. 2021 (Z., 2021) <BR>
+Confidence intervals are also used in clinical trials, where a doctor may anticipate that a new treatment would decrease blood pressure in people. To put this to the test, he may recruit 20 patients for a one-month trial of the new drug. The doctor may record the mean decrease in blood pressure and the standard deviation of the decline in each patient in the trial at the end of the month. 2021 (Z., 2021) <BR>
+Similarly, confidence intervals might be incredibly useful in the game industry (which I am interested in). For example, we may assess 101 professional players to determine what changes can be made to the game to increase user retention while improving their gaming experience. After the changes have been implemented, we may evaluate their influence on the players by establishing if there is an average decrease in the player base as a consequence of the changes, and so on, in order to make the game more interesting. <BR> <BR>
+
+A mathematical model for testing a claim, notion, or hypothesis regarding a parameter of interest in a particular population set using data measured in a sample set is known as hypothesis or significance testing. Calculations are run on chosen samples to acquire more definitive information on the features of the full population, allowing for a systematic technique to test claims or hypotheses about the entire dataset. (Investopedia., 2021) <BR>
+In business, one example of hypothesis testing might be a restaurant owner who wants to know how adding more house sauce to a chicken sandwich affects client satisfaction. In a social media marketing firm, for example, a hypothesis test may be put up to explain how much a labor increase impacts productivity. Thus, hypothesis testing is used in an experimental environment to investigate the link between two or more variables. The findings of a hypothesis test may subsequently be used by business managers to make management choices. Managers may utilize hypothesis testing to explore causes and consequences before making a critical management decision. (Vitez O., 2017)<BR>
+Similarly, hypothesis testing might be incredibly useful in the game industry (which I am interested in). For example, we may do a hypothesis test to determine how much an increase in the playerbase impacts the game's gameplay, or if people are quitting gaming and there is a reduction, is it due to other games, or is it due to our own game not reaching the customer's expectations.
+
+<P>
+<FONT SIZE=4, COLOR="#8710AB">
+<B>ANALYSIS SECTION</B>
+</FONT>
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+First task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and figure out the first fifteen values from the whole data set. </B>
+<P> </FONT>
+
+```{r First Task}
+
+first_fifteen_DS = head(Proj3_DS, 15)
+first_fifteen_DS %>% 
+  kbl(caption = "The First Fifteen values of the dataset") %>% 
+  kable_classic_2(html_font = "Cambria")
+
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+Looking at the top fifteen values from the whole data set, we can observe that several of the sample values contain huge outliers, such as 3.34 for sample 1 and 4.73 for sample 6. However, most of the numbers are less than or equal to 1.5, indicating symmetry in the data set.
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+Second task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and figure out the mean, median and sd of the population and the sample 1 dataset.  </B>
+<P> </FONT>
+
+```{r Second Task}
+
+mean_of_pop = mean(Proj3_DS$Population)
+median_of_pop = median(Proj3_DS$Population)
+sd_of_pop = sd(Proj3_DS$Population)
+
+mean_of_sam1 = mean(Proj3_DS$`Sample 1`, na.rm = TRUE)
+median_of_sam1 = median(Proj3_DS$`Sample 1`, na.rm = TRUE)
+sd_of_sam1 = sd(Proj3_DS$`Sample 1`, na.rm = TRUE)
+
+table_of_pop = table(mean_of_pop, median_of_pop, sd_of_pop)
+dataf_of_pop = as.data.frame(table_of_pop)
+matrix_of_pop = matrix(dataf_of_pop, nrow = 4, byrow = TRUE)
+
+table_of_sam1 = table(mean_of_sam1, median_of_sam1, sd_of_sam1)
+dataf_of_sam1 = as.data.frame(table_of_sam1)
+matrix_of_sam1 = matrix(dataf_of_sam1, nrow = 4, byrow = TRUE)
+
+matrix_of_all_val = cbind(matrix_of_pop, matrix_of_sam1)
+matrix_of_all_val_NAFreq = matrix_of_all_val[-4,]
+colnames(matrix_of_all_val_NAFreq) = c("Population", "SampleOne")
+rownames(matrix_of_all_val_NAFreq) = c("Mean", "Median", "SD")
+
+DT::datatable(matrix_of_all_val_NAFreq, class = 'cell-border stripe') %>% 
+  formatRound("Population", 2) %>% 
+  formatRound("SampleOne", 2) 
+
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+When we look at the basic descriptive values for the population and sample one, we can see that the mean for both the population and sample one is bigger than the median, indicating that the distribution is positively skewed. When we examine the mean, median, and standard deviation for the population and sample, we see that they are comparable, indicating that the data set has a similar pattern.
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+Third task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and figure out the confi interval of multiple values for sample one. </B>
+<P> </FONT>
+
+```{r Third Task}
+
+n_sample1 = 160
+ci1_sample1 = 0.90
+
+z_positive_ci1_sample1 = qnorm((1 + ci1_sample1)/2)
+z_negative_ci1_sample1 = qnorm((1 - ci1_sample1)/2)
+
+sample_error_sample1 = sd_of_sam1/sqrt(n_sample1)
+
+margin_error_ci1_sample1 = z_positive_ci1_sample1 * sample_error_sample1  
+
+upper_limit_ci1_sample1 = mean_of_sam1 + margin_error_ci1_sample1
+lower_limit_ci1_sample1 = mean_of_sam1 - margin_error_ci1_sample1
+cf_width_ci1_sample1 = upper_limit_ci1_sample1 - lower_limit_ci1_sample1
+
+ci2_sample1 = 0.96
+
+z_positive_ci2_sample1 = qnorm((1 + ci2_sample1)/2)
+z_negative_ci2_sample1 = qnorm((1 - ci2_sample1)/2)
+
+margin_error_ci2_sample1 = z_positive_ci2_sample1 * sample_error_sample1   
+
+upper_limit_ci2_sample1 = mean_of_sam1 + margin_error_ci2_sample1
+lower_limit_ci2_sample1 = mean_of_sam1 - margin_error_ci2_sample1
+cf_width_ci2_sample1 = upper_limit_ci2_sample1 - lower_limit_ci2_sample1
+
+ci3_sample1 = 0.99
+
+z_positive_ci3_sample1 = qnorm((1 + ci3_sample1)/2)
+z_negative_ci3_sample1 = qnorm((1 - ci3_sample1)/2)
+
+margin_error_ci3_sample1 = z_positive_ci3_sample1 * sample_error_sample1  
+
+upper_limit_ci3_sample1 = mean_of_sam1 + margin_error_ci3_sample1
+lower_limit_ci3_sample1 = mean_of_sam1 - margin_error_ci3_sample1
+cf_width_ci3_sample1 = upper_limit_ci3_sample1 - lower_limit_ci3_sample1
+
+table_sample1_z_positive = table(z_positive_ci1_sample1, z_positive_ci2_sample1, z_positive_ci3_sample1)
+dataframe_sample1_z_positive = as.data.frame(table_sample1_z_positive)
+matrix_sample1_z_positive = matrix(dataframe_sample1_z_positive, nrow = 4, byrow = TRUE)
+
+table_sample1_z_negative = table(z_negative_ci1_sample1, z_negative_ci2_sample1, z_negative_ci3_sample1)
+dataframe_sample1_z_negative = as.data.frame(table_sample1_z_negative)
+matrix_sample1_z_negative = matrix(dataframe_sample1_z_negative, nrow = 4, byrow = TRUE)
+
+table_sample1_merror = table(margin_error_ci1_sample1, margin_error_ci2_sample1, margin_error_ci3_sample1)
+dataframe_sample1_merror = as.data.frame(table_sample1_merror)
+matrix_sample1_merror = matrix(dataframe_sample1_merror, nrow = 4, byrow = TRUE)
+
+table_sample1_ulimit = table(upper_limit_ci1_sample1, upper_limit_ci2_sample1, upper_limit_ci3_sample1)
+dataframe_sample1_ulimit = as.data.frame(table_sample1_ulimit)
+matrix_sample1_ulimit = matrix(dataframe_sample1_ulimit, nrow = 4, byrow = TRUE)
+
+table_sample1_llimit = table(lower_limit_ci1_sample1, lower_limit_ci2_sample1, lower_limit_ci3_sample1)
+dataframe_sample1_llimit = as.data.frame(table_sample1_llimit)
+matrix_sample1_llimit = matrix(dataframe_sample1_llimit, nrow = 4, byrow = TRUE)
+
+table_sample1_cfwidth = table(cf_width_ci1_sample1, cf_width_ci2_sample1, cf_width_ci3_sample1)
+dataframe_sample1_cfwidth = as.data.frame(table_sample1_cfwidth)
+matrix_sample1_cfwidth = matrix(dataframe_sample1_cfwidth, nrow = 4, byrow = TRUE)
+
+matrix_sample1_allvalues = cbind(matrix_sample1_z_positive, matrix_sample1_z_negative, matrix_sample1_merror, matrix_sample1_ulimit, matrix_sample1_llimit, matrix_sample1_cfwidth)
+
+matrix_sample1_allvalues_NAFreq = matrix_sample1_allvalues[-4,]
+rownames(matrix_sample1_allvalues_NAFreq) = c("90%", "96%", "99%")
+colnames(matrix_sample1_allvalues_NAFreq) = c("Z positive", "Z negative", "Margin Error", "Upper Limit", "Lower Limit", "ConfInterval Width")
+
+DT::datatable(matrix_sample1_allvalues_NAFreq , class = 'cell-border stripe', caption = "Sample 1 Values") %>% 
+  formatRound("Z positive", 2) %>% 
+  formatRound("Z negative", 2) %>% 
+  formatRound("Margin Error", 2) %>% 
+  formatRound("Upper Limit", 2) %>% 
+  formatRound("Lower Limit", 2) %>% 
+  formatRound("ConfInterval Width", 2) 
+
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+The population mean of 1.05 falls within the upper and lower limits of the confidence intervals of 90%, 96%, and 99%, indicating that the sample reflects the genuine population mean. Aside from that, we can see from the table that the z positive and z negative numbers are comparable, with the only variation being the sign, indicating that the values have fully covered the curve. Aside from that, the margin of error grows with the growth in confi interval, as does the width of the confi interval, since as the confi interval grows, more of the values are covered by the curve. 
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+Fourth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and figure out the sample size of the confi interval of multiple values which were created in the previous task. </B>
+<P> </FONT>
+
+```{r Fourth Task}
+
+sample_size_ci90 = (z_positive_ci1_sample1 * z_positive_ci1_sample1) * (sd_of_sam1 * sd_of_sam1)/ (margin_error_ci1_sample1 * margin_error_ci1_sample1)
+
+sample_size_ci96 = (z_positive_ci2_sample1 * z_positive_ci2_sample1) * (sd_of_sam1 * sd_of_sam1)/ (margin_error_ci2_sample1 * margin_error_ci2_sample1)
+
+sample_size_ci99 = (z_positive_ci3_sample1 * z_positive_ci3_sample1) * (sd_of_sam1 * sd_of_sam1)/ (margin_error_ci3_sample1 * margin_error_ci3_sample1)
+
+table_sample4 = table(sample_size_ci90, sample_size_ci96, sample_size_ci99)
+df_sample4 = as.data.frame(table_sample4)
+matrix_sample4 = matrix(df_sample4, nrow = 4, byrow = TRUE)
+rownames(matrix_sample4) = c("90%", "96%", "99%", "Frequency")
+colnames(matrix_sample4) = "Sample Size"
+
+DT::datatable(matrix_sample4, class = 'cell-border stripe', caption = "Sample 4 Values") 
+
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+By reviewing the table, we can see that the sample values for all of the confi intervals are the same, which is 160, which is correct since the total number of values of sample 4 in the data set presented is 160. We acquire the same sample size for sample four by using different z score and margin of error values for the same sd, which verifies that the z score values with the margin of error were right for the confidence intervals of 90%, 96 percent, and 99 percent. 
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+Fifth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and figure out the confi interval of multiple values for sample two. </B>
+<P> </FONT>
+
+```{r Fifth Task}
+
+n_sample2 = 23
+df_sample2 = n_sample2 - 1
+mean_of_sam2 = mean(Proj3_DS$`Sample 2`, na.rm = TRUE)
+sd_of_sam2 = sd(Proj3_DS$`Sample 2`, na.rm = TRUE)
+ci1_sample2 = 0.90
+
+z_positive_ci1_sample2 = qt((1 + ci1_sample1)/2, df_sample2)
+z_negative_ci1_sample2 = qt((1 - ci1_sample1)/2, df_sample2)
+
+sample_error_sample2 = sd_of_sam2/sqrt(n_sample2)
+
+margin_error_ci1_sample2 = z_positive_ci1_sample2 * sample_error_sample2 
+
+upper_limit_ci1_sample2 = mean_of_sam2 + margin_error_ci1_sample2
+lower_limit_ci1_sample2 = mean_of_sam2 - margin_error_ci1_sample2
+cf_width_ci1_sample2 = upper_limit_ci1_sample2 - lower_limit_ci1_sample2
+
+ci2_sample2 = 0.96
+
+z_positive_ci2_sample2 = qt((1 + ci2_sample1)/2, df_sample2)
+z_negative_ci2_sample2 = qt((1 - ci2_sample1)/2, df_sample2)
+
+margin_error_ci2_sample2 = z_positive_ci2_sample2 * sample_error_sample2 
+
+upper_limit_ci2_sample2 = mean_of_sam2 + margin_error_ci2_sample2
+lower_limit_ci2_sample2 = mean_of_sam2 - margin_error_ci2_sample2
+cf_width_ci2_sample2 = upper_limit_ci2_sample2 - lower_limit_ci2_sample2
+
+ci3_sample2 = 0.99
+
+z_positive_ci3_sample2 = qt((1 + ci3_sample1)/2, df_sample2)
+z_negative_ci3_sample2 = qt((1 - ci3_sample1)/2, df_sample2)
+
+margin_error_ci3_sample2 = z_positive_ci3_sample2 * sample_error_sample2 
+
+upper_limit_ci3_sample2 = mean_of_sam2 + margin_error_ci3_sample2
+lower_limit_ci3_sample2 = mean_of_sam2 - margin_error_ci3_sample2
+cf_width_ci3_sample2 = upper_limit_ci3_sample2 - lower_limit_ci3_sample2
+
+table_sample2_z_positive = table(z_positive_ci1_sample2, z_positive_ci2_sample2, z_positive_ci3_sample2)
+dataframe_sample2_z_positive = as.data.frame(table_sample2_z_positive)
+matrix_sample2_z_positive = matrix(dataframe_sample2_z_positive, nrow = 4, byrow = TRUE)
+
+table_sample2_z_negative = table(z_negative_ci1_sample2, z_negative_ci2_sample2, z_negative_ci3_sample2)
+dataframe_sample2_z_negative = as.data.frame(table_sample2_z_negative)
+matrix_sample2_z_negative = matrix(dataframe_sample2_z_negative, nrow = 4, byrow = TRUE)
+
+table_sample2_merror = table(margin_error_ci1_sample2, margin_error_ci2_sample2, margin_error_ci3_sample2)
+dataframe_sample2_merror = as.data.frame(table_sample2_merror)
+matrix_sample2_merror = matrix(dataframe_sample2_merror, nrow = 4, byrow = TRUE)
+
+table_sample2_ulimit = table(upper_limit_ci1_sample2, upper_limit_ci2_sample2, upper_limit_ci3_sample2)
+dataframe_sample2_ulimit = as.data.frame(table_sample2_ulimit)
+matrix_sample2_ulimit = matrix(dataframe_sample2_ulimit, nrow = 4, byrow = TRUE)
+
+table_sample2_llimit = table(lower_limit_ci1_sample2, lower_limit_ci2_sample2, lower_limit_ci3_sample2)
+dataframe_sample2_llimit = as.data.frame(table_sample2_llimit)
+matrix_sample2_llimit = matrix(dataframe_sample2_llimit, nrow = 4, byrow = TRUE)
+
+table_sample2_cfwidth = table(cf_width_ci1_sample2, cf_width_ci2_sample2, cf_width_ci3_sample2)
+dataframe_sample2_cfwidth = as.data.frame(table_sample2_cfwidth)
+matrix_sample2_cfwidth = matrix(dataframe_sample2_cfwidth, nrow = 4, byrow = TRUE)
+
+matrix_sample2_allvalues = cbind(matrix_sample2_z_positive, matrix_sample2_z_negative, matrix_sample2_merror, matrix_sample2_ulimit, matrix_sample2_llimit, matrix_sample2_cfwidth)
+
+matrix_sample2_allvalues_NAFreq = matrix_sample2_allvalues[-4,]
+rownames(matrix_sample2_allvalues_NAFreq) = c("90%", "96%", "99%")
+colnames(matrix_sample2_allvalues_NAFreq) = c("Z positive", "Z negative", "Margin Error", "Upper Limit", "Lower Limit", "ConfInterval Width")
+
+DT::datatable(matrix_sample2_allvalues_NAFreq , class = 'cell-border stripe', caption = "Sample 2 Values") %>% 
+  formatRound("Z positive", 2) %>% 
+  formatRound("Z negative", 2) %>% 
+  formatRound("Margin Error", 2) %>% 
+  formatRound("Upper Limit", 2) %>% 
+  formatRound("Lower Limit", 2) %>% 
+  formatRound("ConfInterval Width", 2) 
+
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+The population mean of 1.05 falls within the upper and lower limits of the confidence intervals of 90%, 96%, and 99%, indicating that the sample two reflects the genuine population mean. Aside from that, we can see from the table that the z positive and z negative numbers are comparable, with the only variation being the sign, indicating that the values have fully covered the curve. Aside from that, the margin of error grows with the growth in confi interval, as does the width of the confi interval, since as the confi interval grows, more of the values are covered by the curve. 
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+Sixth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and figure out the confi interval of proportions for multiple values for sample three. </B>
+<P> </FONT>
+
+```{r Sixth Task}
+
+#Filtering out the sample 3 data from the whole data set which is below 1.7 and then using that to find the sample proportion. 
+
+sample3 = subset(Proj3_DS, `Sample 3` < 1.7)
+sample3_df = as.data.frame(sample3$`Sample 3`)
+total_sample3 = nrow(sample3_df)
+num_sample3 = 1500
+
+p0_sample3 = total_sample3/num_sample3 
+p0_sample3_failure = 1 - p0_sample3
+
+#Filtering out the population data from the whole data set which is below 1.7 and then using that to find the population proportion. 
+
+poplation = subset(Proj3_DS, Population < 1.7)
+poplation_df = as.data.frame(poplation$Population )
+total_sample3 = nrow(poplation_df)
+num_population = 6556
+
+p0_poplation = total_sample3 / num_population
+p0_poplation_failure = 1 - p0_poplation
+
+#Creating a matrix table for the above two proportions. 
+
+table_success1 = table(p0_sample3, p0_poplation)
+df_success1 = as.data.frame(table_success1)
+matrix_success1 = matrix(df_success1, nrow = 3, byrow = TRUE)
+  
+table_failure1 = table(p0_sample3_failure, p0_poplation_failure)
+df_failure1 = as.data.frame(table_failure1)
+matrix_failure1 = matrix(df_failure1, nrow = 3, byrow = TRUE)
+
+matrix_sandf1 = cbind(matrix_success1, matrix_failure1)
+matrix_sandf1_NAfreq = matrix_sandf1[-3,]
+rownames(matrix_sandf1_NAfreq) = c("Sample Three", "Population")
+colnames(matrix_sandf1_NAfreq) = c("Success", "Failure")
+
+DT::datatable(matrix_sandf1_NAfreq , class = 'cell-border stripe', caption = "Sample Three & Population Proportion of Success & Failure") %>% 
+  formatRound("Success", 3) %>% 
+  formatRound("Failure", 3)
+
+#Now calculating the confiintv of other values. 
+
+ci1_sample3 = 0.90
+
+zscore1_sample3 = qnorm((1 + ci1_sample3)/2)
+zscore1_sample3_negative = qnorm((1 - ci1_sample3)/2)
+
+merror1_sample3 = zscore1_sample3*sqrt((p0_sample3*(1-p0_sample3))/num_sample3)
+ulimit1_prop_sample3 = p0_sample3 + merror1_sample3
+llimit1_prop_sample3 = p0_sample3 - merror1_sample3
+cf1_width_sample3 = ulimit1_prop_sample3 - llimit1_prop_sample3
+
+ci2_sample3 = 0.96
+
+zscore2_sample3 = qnorm((1 + ci2_sample3)/2)
+zscore2_sample3_negative = qnorm((1 - ci2_sample3)/2)
+
+merror2_sample3 = zscore2_sample3*sqrt((p0_sample3*(1-p0_sample3))/num_sample3)
+ulimit2_prop_sample3 = p0_sample3 + merror2_sample3
+llimit2_prop_sample3 = p0_sample3 - merror2_sample3
+cf2_width_sample3 = ulimit2_prop_sample3 - llimit2_prop_sample3
+
+ci3_sample3 = 0.99
+
+zscore3_sample3 = qnorm((1 + ci3_sample3)/2)
+zscore3_sample3_negative = qnorm((1 - ci3_sample3)/2)
+
+merror3_sample3 = zscore3_sample3*sqrt((p0_sample3*(1-p0_sample3))/num_sample3)
+ulimit3_prop_sample3 = p0_sample3 + merror3_sample3
+llimit3_prop_sample3 = p0_sample3 - merror3_sample3
+cf3_width_sample3 = ulimit3_prop_sample3 - llimit3_prop_sample3
+
+table_sample3_zpositive = table(zscore1_sample3, zscore2_sample3, zscore3_sample3)
+df_sample3_zpositive = as.data.frame(table_sample3_zpositive)
+matrix_sample3_zpositive = matrix(df_sample3_zpositive, nrow = 4, byrow = TRUE)
+
+table_sample3_znegative = table(zscore1_sample3_negative, zscore2_sample3_negative, zscore3_sample3_negative)
+df_sample3_znegative = as.data.frame(table_sample3_znegative)
+matrix_sample3_znegative = matrix(df_sample3_znegative, nrow = 4, byrow = TRUE)
+
+table_sample3_merror = table(merror1_sample3, merror2_sample3, merror3_sample3)
+df_sample3_merror = as.data.frame(table_sample3_merror)
+matrix_sample3_merror = matrix(df_sample3_merror, nrow = 4, byrow = TRUE)
+
+table_sample3_ulimit = table(ulimit1_prop_sample3, ulimit2_prop_sample3, ulimit3_prop_sample3)
+df_sample3_ulimit = as.data.frame(table_sample3_ulimit)
+matrix_sample3_ulimit = matrix(df_sample3_ulimit, nrow = 4, byrow = TRUE)
+
+table_sample3_llimit = table(llimit1_prop_sample3, llimit2_prop_sample3, llimit3_prop_sample3)
+df_sample3_llimit = as.data.frame(table_sample3_llimit)
+matrix_sample3_llimit = matrix(df_sample3_llimit, nrow = 4, byrow = TRUE)
+
+table_sample3_cfwidth = table(cf1_width_sample3, cf2_width_sample3, cf3_width_sample3)
+df_sample3_cfwidth = as.data.frame(table_sample3_cfwidth)
+matrix_sample3_cfwidth = matrix(df_sample3_cfwidth, nrow = 4, byrow = TRUE)
+
+matrix_sample3_allvalues = cbind(matrix_sample3_zpositive, matrix_sample3_znegative, matrix_sample3_merror, matrix_sample3_ulimit, matrix_sample3_llimit, matrix_sample3_cfwidth)
+
+matrix_sample3_allvalues_NAFreq = matrix_sample3_allvalues[-4,]
+rownames(matrix_sample3_allvalues_NAFreq) = c("90%", "96%", "99%")
+colnames(matrix_sample3_allvalues_NAFreq) = c("Z positive", "Z negative", "Margin Error", "Upper Limit", "Lower Limit", "ConfInterval Width")
+
+DT::datatable(matrix_sample3_allvalues_NAFreq , class = 'cell-border stripe', caption = "Sample 3 Proportion Values") %>% 
+  formatRound("Z positive", 3) %>% 
+  formatRound("Z negative", 3) %>% 
+  formatRound("Margin Error", 3) %>% 
+  formatRound("Upper Limit", 3) %>% 
+  formatRound("Lower Limit", 3) %>% 
+  formatRound("ConfInterval Width", 3) 
+
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+By examining the first table, we can see that the proportion of success for sample three and population are somewhat similar, hovering around 0.89 for sample three and 0.90 for population, with their respective failure proportions hovering around 0.11 and 0.10, indicating that the value of sample three is significantly similar from the population proportion. <BR>
+The population proportion of 0.897 falls within the upper and lower limits of the confidence intervals proportion of 90%, 96%, and 99%, indicating that the sample three reflects the genuine population proportion. Aside from that, we can see from the table that the z positive and z negative numbers are comparable for the proportions, with the only variation being the sign, indicating that the values have fully covered the curve. Aside from that, the margin of error grows with the growth in confi interval, as does the width of the confi interval, since as the confi interval grows, more of the values are covered by the curve.
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+Seventh task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and figure out the confi interval of variance for multiple values for sample four. </B>
+<P> </FONT>
+
+```{r Seventh Task}
+
+ci1_sample4 = 0.90
+ci2_sample4 = 0.96
+ci3_sample4 = 0.99
+num_sample4 = 150
+
+pop_var = var(Proj3_DS$Population, na.rm = TRUE)
+sample4_var = var(Proj3_DS$`Sample 4`, na.rm = TRUE)
+
+df_pop = as.data.frame(pop_var)
+df_sample4var = as.data.frame(sample4_var)
+
+df_total = cbind(df_pop, df_sample4var)
+rownames(df_total) = "Variance"
+colnames(df_total) = c("Population", "Sample Four")
+DT::datatable(df_total, class = 'cell-border stripe', caption = "Sample 4 Population and Sample Variance") %>% 
+  formatRound("Population", 3) %>% 
+  formatRound("Sample Four", 3)
+
+ci1_chi = qchisq(c((1 - ci1_sample4)/2, (1 + ci1_sample4)/2), df = 149, lower.tail = FALSE)
+ci2_chi = qchisq(c((1 - ci2_sample4)/2, (1 + ci2_sample4)/2), df = 149, lower.tail = FALSE)
+ci3_chi = qchisq(c((1 - ci3_sample4)/2, (1 + ci3_sample4)/2), df = 149, lower.tail = FALSE)
+
+df_chi1 = as.data.frame(ci1_chi)
+df_chi2 = as.data.frame(ci2_chi)
+df_chi3 = as.data.frame(ci3_chi)
+
+df_allval = cbind(df_chi1, df_chi2, df_chi3)
+colnames(df_allval) = c("90%", "96%", "99%")
+rownames(df_allval) = c("Chi square right", "Chi square left")
+DT::datatable(df_allval, class = 'cell-border stripe', caption = "Sample 4 Chi Square Values") %>% 
+  formatRound("90%", 3) %>% 
+  formatRound("96%", 3) %>% 
+  formatRound("99%", 3) 
+
+ci1_lowerlimit = ((num_sample4 - 1) * (sample4_var * sample4_var))/ 178.485
+ci2_lowerlimit = ((num_sample4 - 1) * (sample4_var * sample4_var))/ 186.560
+ci3_lowerlimit = ((num_sample4 - 1) * (sample4_var * sample4_var))/ 197.211
+
+ci1_upperlimit = ((num_sample4 - 1) * (sample4_var * sample4_var))/ 121.787
+ci2_upperlimit = ((num_sample4 - 1) * (sample4_var * sample4_var))/ 115.726
+ci3_upperlimit = ((num_sample4 - 1) * (sample4_var * sample4_var))/ 108.291
+
+cf1_width_sample4 = ci1_upperlimit - ci1_lowerlimit
+cf2_width_sample4 = ci2_upperlimit - ci2_lowerlimit
+cf3_width_sample4 = ci3_upperlimit - ci3_lowerlimit
+
+table_upper_sample4 = table(ci1_upperlimit, ci2_upperlimit, ci3_upperlimit)
+df_upper_sample4 = as.data.frame(table_upper_sample4)
+matrix_upper_sample4 = matrix(df_upper_sample4, nrow = 4, byrow = TRUE)
+
+table_lower_sample4 = table(ci1_lowerlimit, ci2_lowerlimit, ci3_lowerlimit)
+df_lower_sample4 = as.data.frame(table_lower_sample4)
+matrix_lower_sample4 = matrix(df_lower_sample4, nrow = 4, byrow = TRUE)
+
+table_cfwidth_sample4 = table(cf1_width_sample4, cf2_width_sample4, cf3_width_sample4)
+df_cfwidth_sample4 = as.data.frame(table_cfwidth_sample4)
+matrix_cfwidthsample4 = matrix(df_cfwidth_sample4, nrow = 4, byrow = TRUE)
+
+matrix_all_sample4 = cbind(matrix_upper_sample4, matrix_lower_sample4, matrix_cfwidthsample4)
+rownames(matrix_all_sample4) = c("90%", "96%", "99%", "Frequency")
+colnames(matrix_all_sample4) = c("Upper Limit", "Lower Limit", "Confi Interval Width")
+matrix_all_sample4_NAFreq = matrix_all_sample4[-4,]
+DT::datatable(matrix_all_sample4_NAFreq, class = 'cell-border stripe', caption = "Sample 4 Variance Values Upper, Lower limit & Confi Interval Width") %>% 
+  formatRound("Upper Limit", 3) %>% 
+  formatRound("Lower Limit", 3) %>% 
+  formatRound("Confi Interval Width", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+By analyzing the first & second table we can notice that chi square right value for each confidence interval is increasing with the level of confidence interval but the chi square left is decreasing with the level of confidence. 
+The population variance of 0.874 doesn't fall within the upper and lower limit of confidence intervals variance of 90%, 96%, and 99%, indicating that the sample four doesn't reflects the genuine population variance. Also, as the confidence interval is increasing so is the upper limit and confidence interval width of the corresponding confi intervals. 
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+Eight task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and carry hypothesis testing on sample five for the two tailed test. </B>
+<P> </FONT>
+
+```{r Eight Task}
+
+# Finding out mean & sd of the population and sample five 
+
+mean_sample5 = mean(Proj3_DS$`Sample 5`, na.rm = TRUE)
+num_sample5 = 200
+
+ci_sample5 = 0.95
+alpha_sample5 = 1 - ci_sample5
+z_sample5 = sd_of_pop/sqrt(num_sample5)
+z_test_sample5 = (mean_sample5 - mean_of_pop)/z_sample5
+
+cv_sample5 = qnorm((1 + ci_sample5)/2)
+
+test_sample5 = z_test_sample5 > cv_sample5
+
+table_sample5 = table(mean_of_pop, sd_of_pop, mean_sample5, z_test_sample5, cv_sample5, test_sample5)
+df_sample5 = as.data.frame(table_sample5)
+matrix_sample5 = matrix(df_sample5, ncol = 7, byrow = TRUE)
+colnames(matrix_sample5) = c("Population Mean", "Population SD", "Sample Five Mean", "Z test of Sample5", "Critical value of Sample 5", "Ztest > Critical Value", "Frequency")
+rownames(matrix_sample5) = "Values"
+
+DT::datatable(matrix_sample5, class = 'cell-border stripe', caption = "Sample 5 with Z test and Critical value on 95% confidence interval & Population Values") %>% 
+  formatRound("Population Mean", 3) %>% 
+  formatRound("Population SD", 3) %>% 
+  formatRound("Sample Five Mean", 3) %>% 
+  formatRound("Z test of Sample5", 3) %>% 
+  formatRound("Critical value of Sample 5", 3)
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+We can see from the table that the sample five mean is much higher than the population mean. Aside from that, after performing the critical values test on the z test value of confi interval 95 percent, we can see that the value of ztest was greater than the critical value, but we don't have enough evidence to confirm it because p value is a better test than z/t test to confirm if we should reject or fail to reject null hypothesis.
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+Ninth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and figure out the p value, then compare it with the previous task. </B>
+<P> </FONT>
+
+```{r Ninth Task}
+
+pvalue_sample5 = pnorm(z_test_sample5)
+
+new_pvalue_sample5 = 2*pvalue_sample5
+
+sample9_test = new_pvalue_sample5 < alpha_sample5
+
+table_sample9 = table(sample9_test)
+df_sample9 = as.data.frame(table_sample9)
+matrix_sample9 = matrix(df_sample9, nrow = 2, byrow = TRUE)
+rownames(matrix_sample9) = c("95%", "Frequency")
+colnames(matrix_sample9) = "P value < alpha"
+
+DT::datatable(matrix_sample9, class = 'cell-border stripe', caption = "Sample 5 p value < alpha test on 95% confidence interval")
+
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+We can see from the table that after doing the p value test on the z test value acquired in the previous job, the p value is not smaller than the alpha value, hence we can't reject the null hypothesis here or we fail to reject the null hypothesis. If we compare it to the previous z test, the z test value is greater than the critical value, so we must reject the null hypothesis. However, because the p value test is much better than the z test value in terms of estimating probability, we should prefer the p value test and not reject the null hypothesis.
+
+<B><FONT SIZE = 3, COLOR = "#AE345D">
+Tenth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#348DAE">
+<B> Exhibit a table and carry hypothesis testing on sample six. </B>
+<P> </FONT>
+
+```{r Tenth Task}
+
+# Finding out mean & sd of the population and sample six
+
+mean_sample6 = mean(Proj3_DS$`Sample 6`, na.rm = TRUE)
+sdsample6 = sd(Proj3_DS$`Sample 6`, na.rm = TRUE)
+num_sample6 = 29
+df_sample6 = num_sample6 - 1
+
+ci_sample6 = 0.99
+alpha_sample6 = 1 - ci_sample6
+t_sample6 = sdsample6/sqrt(num_sample6)
+t_test_sample6 = (mean_sample6 - mean_of_pop)/t_sample6
+
+cv_sample6 = qt(ci_sample6, df_sample6)
+
+t_test_result = t_test_sample6 > cv_sample6
+
+pvalue_sample6 = pt(t_test_sample6, df_sample6)
+
+new_pvalue_sample6 = 2*pvalue_sample6
+
+p_test_result = new_pvalue_sample6 < alpha_sample6
+
+table_sample6 = table(mean_of_pop, mean_sample6, sdsample6, t_test_sample6, cv_sample6, t_test_result, pvalue_sample6, p_test_result)
+df_sample6 = as.data.frame(table_sample6)
+matrix_sample6 = matrix(df_sample6, ncol = 9, byrow = TRUE)
+colnames(matrix_sample6) = c("Population Mean", "Sample Six Mean", "Sample Six SD", "T test of Sample6", "Critical Value of Sample 6", "T test > Critical Value", "P value of Sample6", "P test < Alpha", "Frequency")
+rownames(matrix_sample6) = "Values"
+
+DT::datatable(matrix_sample6, class = 'cell-border stripe', caption = "Sample 5 & Population Values") %>% 
+  formatRound("Population Mean", 3) %>% 
+  formatRound("Sample Six Mean", 3) %>% 
+  formatRound("Sample Six SD", 3) %>% 
+  formatRound("T test of Sample6", 3) %>% 
+  formatRound("Critical Value of Sample 6", 3) %>% 
+  formatRound("P value of Sample6", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#5A5E21">
+We can see from the table the sample six mean is higher than the population mean but the difference is that much when compared to the previous task. Aside form that, after performing the critical values test on the t test value of confi interval of 99 percent, we can see that value of t test was not greater than the critical value, so that means that we can not reject the null hypothesis but we don't have enough evidence to confirm it as p value test is a better test than z/t test to confirm if we can reject or fail to reject the null hypothesis. After conducting the p value test we can notice that the p value is also not smaller than the alpha value which confirm with out t test that we fail to reject to the null hypothesis. 
+
+<P>
+<FONT SIZE=4, COLOR="#8710AB">
+<B>CONCLUSION</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#5A5E21"> 
+<BR>
+To highlight a few key points, the population mean, median, and standard deviation values are quite comparable to the sample one values. The sample size of sample 4 was 160 for each of the confidence intervals, whether it was 90%, 96%, or 99%, which was the same as the sample 4, confirming that even if the z value and margin of error were different, we still got the sample size. Aside from that, when we performed the z test greater than critical value for sample five, we rejected the null hypothesis, but when we performed the pvalue test for the same z test value, we failed to reject the null hypothesis. We prefer the p value test over the z/t test. When we did the same test in sample six, where the t test and p value test yielded similar results, and we failed to reject the null hypothesis. <BR>
+Finally, I gained better knowledge of the hypothesis testing, confidence interval, z positive & z negative value, t value, z test, t test, p value test, critical value & chi square test. Not only did I learned how to remove the NA values from the dataset by using na.rm function but I also learned to use the subset function to filter out the data with constraint on it. I also learnt about z test & p value test in depth and learned how to compare them with the critical value & alpha so that we can either reject the null hypothesis or fail to reject the null hypothesis. 
+
+<P>
+<FONT SIZE=4, COLOR="#8710AB">
+<B>BIBLIOGRAPHY</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#5A5E21"> 
+<BR>
+1) Padilla, J. (2021, May 5). The Importance of Salary Survey Data. Archbright. https://www.archbright.com/blog/the-importance-of-salary-survey-data <BR>
+2) Z. (2021, May 5). 4 Examples of Confidence Intervals in Real Life. Statology. https://www.statology.org/confidence-interval-real-life-example/ <BR>
+3) Hypothesis Testing in Finance: Concept and Examples. (2021, October 1). Investopedia. https://www.investopedia.com/articles/active-trading/092214/hypothesis-testing-finance-concept-examples.asp <BR>
+4) Vitez, O. (2017, November 21). The Use of Math in Economic Analysis. Small Business - Chron.Com. https://smallbusiness.chron.com/use-math-economic-analysis-3899.html <BR>
+
+

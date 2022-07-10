@@ -1,0 +1,391 @@
+---
+title: ""
+output: html_document
+---
+
+```{r libraries, message=FALSE, warning=FALSE}
+
+library(kableExtra)
+library(knitr)
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(RColorBrewer)
+library(magrittr) 
+library(DT)
+library(MASS)
+
+# Data set for the assignment. 
+
+Proj4_DS = cats
+
+```
+
+<P>
+<FONT SIZE=4, COLOR="#1F19D0">
+<B>INTRODUCTION</B>
+</FONT><BR>
+<B><FONT SIZE=3, COLOR="#1B879C"> 
+Hypothesis testing and it's use in the gaming industry.
+<B><FONT SIZE=3, COLOR="#0E4139"> 
+<BR>
+Hypothesis testing is a method for determining how reliably one can draw conclusions observed findings in a sample under study to the larger population from which the sample was drawn. It is used to assess the strength of evidence from the sample and provides a framework for making population-related decisions. The investigator develops a particular hypothesis, assesses data from the sample, and determines if the results support the hypothesis. (Statistics., 2021) 
+<BR>
+The translation of the study question into a null hypothesis, H0, and an alternative hypothesis, Ha is the first stage in testing hypotheses. The null and alternative hypotheses are short explanations of two potential versions of "truth" concerning the connection between the predictor of interest and the population result, generally in mathematical form. (Encyclopedia Britannica., 2020)
+<BR>
+Hypothesis testing is beneficial in a variety of industries, like finance and healthcare, but it can also be quite beneficial in the gaming business (which I am interested in). For example, we may do a hypothesis test to see how much an increase in the playerbase affects the game's gameplay, or if people are leaving gaming and there is a decrease, is it due to other games or is it due to our own game failing to meet the customer's expectations?.
+<BR> 
+<B><FONT SIZE=3, COLOR="#1B879C"> 
+Difference between z-test, t-test & F-test with their instances.
+<BR> </FONT>
+A z-test is used to compare the means of two populations, or to test the mean of a population vs a standard, using (n ≥ 30) samples whether or not the population standard deviation is known. It may also be used to compare the proportions of two populations or to compare the proportions of particular characteristics to a standard proportion. (B., 2019)
+<BR>
+Comparing the average technical wages of men and women & Comparing the proportion of defectives from two manufacturing lines, are some of the example.
+<BR>
+When the standard deviation of two populations is unknown and the sample size is small (n < 30), a t-test is used to compare the means of the two populations. A z-test may be used if you know the standard deviation of the populations. (B., 2019)
+<BR>
+Comparing the average weight of cars & Comparing the different types of phones based on the amount of RAM they offer, are some of the example. 
+<BR>
+The F-test is used to test the hypothesis that two population variances are equal, or that two or more population means are equal. (Industrial Statistics., 2019)
+<BR>
+Comparing the variability of bolt diameters from two machines & Comparing the variability of two manufacturing plants, are some of the example.
+<BR>
+<B><FONT SIZE=3, COLOR="#1B879C"> 
+Importance of proper reference for Academic Integrity 
+<BR> </FONT>
+It is critical to provide error-free work as your project submission if you want to get excellent grades. However, writing fresh material in all of your projects, homework, and research work is difficult. As a result, students must gain the necessary expertise to ensure that their work is original and free of plagiarism. You must comprehend the necessity of referencing while writing academic research papers if you want your work to be legitimate. (Smith S., 2022)
+<BR>
+You must integrate numerous researchers' works in your work, particularly your research work, and you must refer to trustworthy sources for information such as articles, journals, research papers, or any book. Because writing specific stuff in your own words may result in inaccurate or misleading information. As a result, you must recognize the importance of referencing while writing your research papers. This article will provide you with thorough information on citations and referencing so that you can use them correctly. 
+<BR>
+<B> What's the point of a reference? </B>
+<BR>
+Correct referencing lets people to identify the sources you've used, which helps you prevent plagiarism by making it apparent which ideas are your own and which are someone else, displays your grasp of the issue provides supporting evidence for your ideas, arguments, and views (Library., 2022)
+<BR>
+<B><FONT SIZE=3, COLOR="#1B879C"> 
+About the data set that is used in this project. 
+<BR> </FONT>
+The "MASS" library is used to pull the "cats" data set that is being used in this R Markdown project. The whole data set contains 144 rows and 3 columns. The first column is sexes of cat which has two types of variables: M for males & F for females. The second column is bwt which is the body weight of cats in kg. Finally, the last column is hwt which is the heart weight of cats in gm. 
+
+<P>
+<FONT SIZE=4, COLOR="#1F19D0">
+<B>ANALYSIS SECTION</B>
+</FONT>
+
+<B><FONT SIZE = 3, COLOR = "#71169E">
+First task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#159C34">
+<B> Exhibit a table and figure out the basic descriptive statistics the public data set cat. Also, make the table visually appealing </B>
+<P> </FONT>
+
+```{r First Task}
+
+#Finding out basic desc stats for the data set
+
+mean_cats1 = mean(Proj4_DS$Bwt)
+sd_cats1 = sd(Proj4_DS$Bwt)
+median_cats1 = median(Proj4_DS$Bwt)
+max_cats1 = max(Proj4_DS$Bwt)
+min_cats1 = min(Proj4_DS$Bwt)
+range_cats1 = max_cats1 - min_cats1
+quantile_cats1 = quantile(Proj4_DS$Bwt, 0.25)
+
+mean_cats2 = mean(Proj4_DS$Hwt)
+sd_cats2 = sd(Proj4_DS$Hwt)
+median_cats2 = median(Proj4_DS$Hwt)
+max_cats2 = max(Proj4_DS$Hwt)
+min_cats2 = min(Proj4_DS$Hwt)
+range_cats2 = max_cats2 - min_cats2
+quantile_cats2 = quantile(Proj4_DS$Hwt, 0.25)
+
+table_cats1 = table(mean_cats1, sd_cats1, median_cats1, max_cats1, min_cats1, range_cats1, quantile_cats1)
+df_cats1 = as.data.frame(table_cats1)
+matrix_cats1 = matrix(df_cats1, nrow = 8, byrow = TRUE)
+
+table_cats2 = table(mean_cats2, sd_cats2, median_cats2, max_cats2, min_cats2, range_cats2, quantile_cats2)
+df_cats2 = as.data.frame(table_cats2)
+matrix_cats2 = matrix(df_cats2, nrow = 8, byrow = TRUE)
+
+matrix_cats_all = cbind(matrix_cats1, matrix_cats2)
+matrix_cats_all_NAFreq = matrix_cats_all[-8,]
+
+rownames(matrix_cats_all_NAFreq) = c("Mean", "SD", "Median", "Max Value", "Min Value", "Range", "25th Quantile")
+colnames(matrix_cats_all_NAFreq) = c("Body Weight(kg)", "Heart Weight(gms)")
+
+
+DT::datatable(matrix_cats_all_NAFreq, class = 'cell-border stripe', caption = "Basic Descriptive Stats for cats body weight(kg) & heart weight(gms)") %>% 
+  formatRound("Body Weight(kg)", 2) %>% 
+  formatRound("Heart Weight(gms)", 2) 
+
+```
+
+<B><FONT SIZE=3, COLOR="#0E4139"> 
+After taking out the basic descriptive stats(mean, SD, median, max value, min value, range & 25th quantile) of the "cats" data set for both the body weight and heart weight numeric variable for the data set, the table was represented by using the DT library and formatRound function was used to make the table more visually presentable by rounding off the values. We can analyze from the table that mean of both the variables are greater than the median indicating that the distribution graph will be positively skewed. Other than that, the range of heart weight is comparatively bigger than the range of body weight which indicates that there is huge variation in the heart weight variable when compared to body weight variable.
+
+<B><FONT SIZE = 3, COLOR = "#71169E">
+Second task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#159C34">
+<B> Exhibit a table and carry out hypothesis testing on the body weight for different sexes of cats. </B>
+<P> </FONT>
+
+```{r Second Task}
+
+male_cats = subset(Proj4_DS, subset = (Proj4_DS$Sex == "M"))
+female_cats = subset(Proj4_DS, subset = (Proj4_DS$Sex == "F"))
+
+mean_male_bw = mean(male_cats$Bwt)
+num_male = nrow(male_cats)
+sd_male_bw = sd(male_cats$Bwt)
+
+mean_female_bw = mean(female_cats$Bwt)
+num_female = nrow(female_cats)
+sd_female_bw = sd(female_cats$Bwt)
+
+#Right tail test
+alpha1_cats = 0.01
+cv1_cats = qnorm(1 - alpha1_cats)
+
+ztest_cats1 = (mean_male_bw - mean_female_bw)/sqrt((sd_male_bw * sd_male_bw)/num_male + (sd_female_bw * sd_female_bw)/num_female)
+  
+#Hypo testing for z test
+
+ztest_test = ztest_cats1 > cv1_cats
+
+#P-value testing for cats
+
+pvalue_cats1 = 1 - pnorm(ztest_cats1)
+pvalue_test1 = pvalue_cats1 < alpha1_cats
+  
+table_cats_bw = table(mean_male_bw, sd_male_bw, mean_female_bw, sd_female_bw, cv1_cats, ztest_cats1, ztest_test, pvalue_cats1, pvalue_test1)
+df_cats_bw = as.data.frame(table_cats_bw)
+matrix_cats_bw = matrix(df_cats_bw, ncol = 10, byrow = TRUE)
+colnames(matrix_cats_bw) = c("Male Cat Mean", "Male Cat SD", "Female Cat Mean", "Female Cat SD", "Critical Value", "Ztest Value", "Ztest > Critical Value", "P value", "P value < alpha", "Frequency")
+rownames(matrix_cats_bw) = "Body weight cat values in kg"
+
+DT::datatable(matrix_cats_bw, class = 'cell-border stripe', caption = "Body weight difference for right tail test between male and female cats") %>% 
+  formatRound("Male Cat Mean", 3) %>% 
+  formatRound("Male Cat SD", 3) %>% 
+  formatRound("Female Cat Mean", 3) %>% 
+  formatRound("Female Cat SD", 3) %>% 
+  formatRound("Critical Value", 3) %>% 
+  formatRound("Ztest Value", 3) %>% 
+  formatRound("P value", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#0E4139">
+The male and female cats were separated from the total cats data set using a subset function. The null hypothesis was then tested using the right tail hypothesis testing (z-test) on the mean and SD of male and female cats body weight to see whether it could be rejected. We can see from the table that the mean and SD of male cats body weight are higher than those of female cats body weight. After determining the z-test value, the ztest was performed on the critical value (alpha = 0.01) where the ztest was more than the critical value (ztest > critical value = TRUE). To emphasize the case even better, a pvalue test was performed on the identical right tailed z test value, confirming that the p value result was smaller than the alpha value (pvalue < alpha = TRUE). As a result, we will reject the null hypothesis that states "the mean of sample 1 (male cats body weight) and the mean of sample 2 (female cats body weight) are equal" and accept the alternative hypothesis which states "the mean of sample 1 (male cats body weight) and the mean of sample 2 (female cats body weight) are not equal". 
+
+<B><FONT SIZE = 3, COLOR = "#71169E">
+Third task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#159C34">
+<B> Exhibit a table and carry out variance hypothesis testing on the body weight for different sexes of cats. </B>
+<P> </FONT>
+
+```{r Third Task}
+
+#Right tail test 
+
+alpha2 = 0.01
+ftest_cats = (sd_male_bw * sd_male_bw)/(sd_female_bw * sd_female_bw)
+
+cv2_cats_bwt = qnorm(1 - alpha2)
+
+ztest_test2 = ftest_cats > cv2_cats_bwt
+
+pvalue_cats2 = 1 - pnorm(ftest_cats)
+pvalue_test2 = pvalue_cats2 < alpha2
+
+table_cats_f1 = table(sd_male_bw, sd_female_bw, cv2_cats_bwt, ftest_cats, ztest_test2, pvalue_cats2, pvalue_test2)
+df_cats_f1 = as.data.frame(table_cats_f1)
+matrix_cats_f1 = matrix(df_cats_f1, ncol = 8, byrow = TRUE)
+
+colnames(matrix_cats_f1) = c("Male Cat SD", "Female Cat SD", "Critical Value", "F test value", "Ftest > Critical Value", "P value", "P value < alpha", "Frequency")
+rownames(matrix_cats_f1) = "Body weight cat values in kg"
+
+DT::datatable(matrix_cats_f1, class = 'cell-border stripe', caption = "Variance test for body weight difference of a right tail test between male and female cats") %>% 
+  formatRound("Male Cat SD", 3) %>% 
+  formatRound("Female Cat SD", 3) %>% 
+  formatRound("Critical Value", 3) %>% 
+  formatRound("F test value", 3) %>% 
+  formatRound("P value", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#0E4139">
+After we separated the male cats with the female in the previous task using the subset function, here we will use those separated values SD to figure out the variance body weight difference on a right tail test. We can see from the table that the f-test value comes out to be 2.91 which was determined by using the f-test formula = ((SD of sample1) ^ 2) / ((SD of sample2) ^ 2). After determining the f-test value, the ftest was performed on the critical value (alpha = 0.01) where the ftest was more than the critical value (ftest > critical value = TRUE). To emphasize the case even better, a pvalue test was performed on the identical right tailed ftest value, confirming that the p value result was smaller than the alpha value (pvalue < alpha = TRUE). As a result, we will reject the null hypothesis that "the variance of sample 1 (male cats body weight) and the variance of sample 2 (female cats body weight) are equal" and accept the alternative hypothesis which states "the variance of sample 1 (male cats body weight) and the variance of sample 2 (female cats body weight) are not equal". 
+
+<B><FONT SIZE = 3, COLOR = "#71169E">
+Fourth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#159C34">
+<B> Exhibit a table and carry out hypothesis testing on the heart weight for different sexes of cats. </B>
+<P> </FONT>
+
+```{r Fourth Task}
+
+mean_male_hwt = mean(male_cats$Hwt)
+sd_male_hwt = sd(male_cats$Hwt)
+
+mean_female_hwt = mean(female_cats$Hwt)
+sd_female_hwt = sd(female_cats$Hwt)
+
+#Right tail test
+alpha2_cats = 0.001
+cv2_cats = qnorm(1 - alpha2_cats)
+
+ztest_cats2 = (mean_male_hwt - mean_female_hwt)/sqrt((sd_male_hwt * sd_male_hwt)/num_male + (sd_female_hwt * sd_female_hwt)/num_female)
+
+#Hypo testing for z test
+
+ztest_test3 = ztest_cats2 > cv2_cats
+
+#P-value testing for cats
+
+pvalue_cats3 = 1 - pnorm(ztest_cats2)
+pvalue_test3 = pvalue_cats3 < alpha2_cats
+
+table_cats_hwt = table(mean_male_hwt, sd_male_hwt, mean_female_hwt, sd_female_hwt, cv2_cats, ztest_cats2, ztest_test3, pvalue_cats3, pvalue_test3)
+df_cats_hwt = as.data.frame(table_cats_hwt)
+matrix_cats_hwt = matrix(df_cats_hwt, ncol = 10, byrow = TRUE)
+colnames(matrix_cats_hwt) = c("Male Cat Mean", "Male Cat SD", "Female Cat Mean", "Female Cat SD", "Critical Value", "Ztest Value", "Ztest > Critical Value", "P value", "P value < alpha", "Frequency")
+rownames(matrix_cats_hwt) = "Heart weight cat values in gms"
+
+DT::datatable(matrix_cats_hwt, class = 'cell-border stripe', caption = "Heart weight difference for right tail test between male and female cats") %>% 
+  formatRound("Male Cat Mean", 3) %>% 
+  formatRound("Male Cat SD", 3) %>% 
+  formatRound("Female Cat Mean", 3) %>% 
+  formatRound("Female Cat SD", 3) %>% 
+  formatRound("Critical Value", 3) %>% 
+  formatRound("Ztest Value", 3) %>% 
+  formatRound("P value", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#0E4139">
+After we separated the male cats with the female in the previous task using the subset function, here we will use those separated values to figure out the mean heart weight difference on a right tail test. We can see from the table that the mean and SD of male cats heart weight are higher than those of female cats herat weight. After determining the z-test value, the ztest was performed on the critical value (alpha = 0.001) where the ztest was more than the critical value (ztest > critical value = TRUE). To emphasize the case even better, a pvalue test was performed on the identical right tailed z test value, confirming that the p value result was smaller than the alpha value (pvalue < alpha = TRUE). As a result, we will reject the null hypothesis that states "the mean of sample 1 (male cats heart weight) and the mean of sample 2 (female cats heart weight) are equal" and accept the alternative hypothesis which states "the mean of sample 1 (male cats heart weight) and the mean of sample 2 (female cats heart weight) are not equal". 
+
+<B><FONT SIZE = 3, COLOR = "#71169E">
+Fifth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#159C34">
+<B> Exhibit a table and carry out variance hypothesis testing on the heart weight for different sexes of cats. </B>
+<P> </FONT>
+
+```{r Fifth Task}
+
+#Right tail test 
+
+alpha2_cats = 0.001
+ftest_cats2 = (sd_male_hwt * sd_male_hwt)/(sd_female_hwt* sd_female_hwt)
+
+cv2_cats_hwt = qnorm(1 - alpha2_cats)
+
+ztest_test4 = ftest_cats2 > cv2_cats_hwt
+
+pvalue_cats4 = 1 - pnorm(ftest_cats2)
+pvalue_test4 = pvalue_cats4 < alpha2_cats
+
+table_cats_f2 = table(sd_male_hwt, sd_female_hwt, cv2_cats_hwt, ftest_cats2, ztest_test4, pvalue_cats4, pvalue_test4)
+df_cats_f2 = as.data.frame(table_cats_f2)
+matrix_cats_f2 = matrix(df_cats_f2, ncol = 8, byrow = TRUE)
+
+colnames(matrix_cats_f2) = c("Male Cat SD", "Female Cat SD", "Critical Value", "F test value", "Ftest > Critical Value", "P value", "P value < alpha", "Frequency")
+rownames(matrix_cats_f2) = "Heart weight cat values in gms"
+
+DT::datatable(matrix_cats_f2, class = 'cell-border stripe', caption = "Variance test for heart weight difference of a right tail test between male and female cats") %>% 
+  formatRound("Male Cat SD", 3) %>% 
+  formatRound("Female Cat SD", 3) %>% 
+  formatRound("Critical Value", 3) %>% 
+  formatRound("F test value", 3) %>% 
+  formatRound("P value", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#0E4139">
+After we separated the male cats with the female in the previous task using the subset function, here we will use those separated values SD to figure out the variance heart weight difference on a right tail test. We can see from the table that the f-test value comes out to be 2.506 which was determined by using the f-test formula = ((SD of sample1) ^ 2) / ((SD of sample2) ^ 2). After determining the f-test value, the ftest was performed on the critical value (alpha = 0.001) where the ftest was more than the critical value (ftest > critical value = TRUE). To emphasize the case even better, a pvalue test was performed on the identical right tailed ftest value, confirming that the p value result was smaller than the alpha value (pvalue < alpha = TRUE). As a result, we will reject the null hypothesis that "the variance of sample 1 (male cats heart weight) and the variance of sample 2 (female cats heart weight) are equal" and accept the alternative hypothesis which states "the variance of sample 1 (male cats heart weight) and the variance of sample 2 (female cats heart weight) are not equal". 
+
+<B><FONT SIZE = 3, COLOR = "#71169E">
+Sixth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#159C34">
+<B> Exhibit a table and carry out hypothesis testing on two dependent paired samples to determine if meditation have an effect on sleep quality. </B>
+<P> </FONT>
+
+```{r Sixth Task}
+
+num_med = 12
+med1 = c(5.7, 7.8, 5.9, 5.6, 5.9, 6.8, 5.7, 3.9, 4.6, 4.5, 7.7, 6.3)
+med2 = c(6.8, 8.7, 7.6, 6.2, 6.1, 7.7, 5.9, 4.5, 5.5, 6.1, 6.9, 5.2)
+alpha_med = 0.01
+
+cv_med = qnorm(alpha_med)
+
+med3 = med1 - med2
+sum_med3 = sum(med3)
+
+med4 = med3 * med3
+sum_med4 = sum(med4)
+
+diffmean_med = sum_med3/num_med
+
+sd_bot = num_med * (num_med - 1)
+sd_med = sqrt(((num_med * sum_med4) - (sum_med3 * sum_med3))/sd_bot)
+
+t_medvalue = diffmean_med/(sd_med/sqrt(num_med))
+
+t_medtest = t_medvalue > cv_med
+
+# we can't reject null hypothesis
+
+pvalue_med = pnorm(t_medvalue)
+pvalue_med_test = pvalue_med < alpha_med
+
+# we can't reject p value. 
+
+table_med = table(cv_med, sd_med, t_medvalue, t_medtest, pvalue_med, pvalue_med_test)
+df_med = as.data.frame(table_med)
+matrix_med = matrix(df_med, ncol = 7, byrow = TRUE)
+
+colnames(matrix_med) = c("Critical Value", "Sd value", "t distribution value", "t value > Critical value", "p value", "p value < alpha", "Frequency")
+rownames(matrix_med) = "Meditation values"
+
+DT::datatable(matrix_med, class = 'cell-border stripe', caption = "Meditation difference test between sleeping quality of two groups for a left tail test") %>% 
+  formatRound("Critical Value", 3) %>% 
+  formatRound("Sd value", 3) %>% 
+  formatRound("t distribution value", 3) %>% 
+  formatRound("p value", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#0E4139">
+Here we used the average sleeping quality score conducted on 13 students to evaluate if meditation have effect on sleep quality. We calculated the difference of the average values which was used to calculate the sd and t distribution value for the difference test. After talking out the critical value (alpha = 0.01), the t test was performed on the critical value where the test was greater than the critical value(test > critical value = TRUE). But here the value is negative which confirms that it's a left tailed test therefore, we can't reject the null hypothesis. To emphasize the case even better, a pvalue test was performed on the identical left tailed t test value, confirming that the pvalue result was greater than the alpha value (pvalue < alpha = FALSE). As a result, we fail to reject the null hypothesis that states "Meditation doesn't improve sleep quality" and we reject the alternative hypothesis which states "Meditation improves sleep quality". 
+
+<P>
+<FONT SIZE=4, COLOR="#1F19D0">
+<B>CONCLUSION</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#0E4139"> 
+<BR>
+To emphasize a few points, for both the numeric columns body weight and heart weight of cats, the mean was bigger than the median, indicating that the distribution graph would be positively skewed. In addition, the heart weight range of cats was much bigger than the body weight range. The alpha values of 0.01 and 0.001 for the ztest and pvalue test for the cats body weight and heart weight (male and female cats) correspondingly confirmed that we would reject the null hypothesis for both the right tail test scenarios. The identical situation occurred during the variance difference test (ftest) for the cats body weight and heart weight (male and female cats) with alpha values of 0.01 and 0.001, respectively, confirming that the null hypothesis would be rejected in both right tail test scenarios. Finally, in the final task, where the alternative hypothesis was "Meditation enhances sleep quality" we were unable to reject the null hypothesis which confirmed that "Meditation doesn't enhance sleep quality".
+<BR>
+As a result, my advice after inferential testing is that the mean body weight/heart weight of male and female cats is not the same. Also, after concluding the study on 13 students, I would conclude that "Meditation does not increase sleep quality," and the researchers who came to that conclusion are incorrect. We will commit a type 1 mistake if we follow their advice since we will reject the right null hypothesis.
+<BR>
+Finally, I improved my understanding of hypothesis testing, z test, t test, and f test when comparing two samples. Not only that, but I also learnt about the subset function, which was comparable to the dplyr filter function and was used to filter distinct cat sex types. On a real-world example, I also learnt how to execute hypothesis testing for two dependent paired samples and how to compute the t distribution value.  
+
+<P>
+<FONT SIZE=4, COLOR="#1F19D0">
+<B>BIBLIOGRAPHY</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#0E4139"> 
+<BR>
+1) Hypothesis Testing. (2021, October 12). Statistics How To. https://www.statisticshowto.com/probability-and-statistics/hypothesis-testing/ <BR>
+2) statistics - Hypothesis testing. (2020). Encyclopedia Britannica. https://www.britannica.com/science/statistics/Hypothesis-testing <BR>
+3) B. (2019, October 7). Difference between Z-test, F-test, and T-test. Brandalyzer. https://brandalyzer.blog/2010/12/05/difference-between-z-test-f-test-and-t-test/ <BR>
+4) ES-4: Lesson 20. F- TEST AND ITS APPLICATIONS. (2019). Industrial Statistics. http://ecoursesonline.iasri.res.in/mod/resource/view.php?id=4772 <BR>
+5) Smith, S. (2022, February 21). Learn the importance of referencing in academic writing. Blog - Great Assignment Help. https://www.greatassignmenthelp.com/blog/importance-of-referencing-in-academic-writing/ <BR>
+6) Library. (2022). Referencing explained. University of Leeds. https://library.leeds.ac.uk/info/1402/referencing/47/referencing_explained#:%7E:text=Referencing%20is%20an%20important%20part,you%20use%20someone%20else’s%20idea. <BR>
+
+

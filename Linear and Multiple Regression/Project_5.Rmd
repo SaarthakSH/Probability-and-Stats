@@ -1,0 +1,651 @@
+---
+title: ""
+output: html_document
+---
+
+```{r libraries, message=FALSE, warning=FALSE}
+
+library(psych)
+library(FSA)
+library(kableExtra)
+library(knitr)
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(RColorBrewer)
+library(knitr)
+library(ggplot2)
+library(summarytools)
+library(DT)
+library(DescTools)
+
+# Data set used for this project 
+
+Proj5_DS = mpg
+
+Proj6_MR = read_excel("Dataset/M6FinalData.xlsx")
+
+```
+
+<P>
+<FONT SIZE=4, COLOR="#1C88D0">
+<B>INTRODUCTION</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#413425"> 
+<BR>
+According to an analysis of Sir Francis Galton's and Karl Pearson's work, Galton's study on hereditary traits of sweet peas influenced the development of linear regression. Following Galton and Pearson's work, the more general methods of multiple regression and the product-moment correlation coefficient were developed. Before addressing prediction issues and the use of linear regression, most modern textbooks show and explain correlation. This study gives a short overview of how Galton developed and used linear regression to issues of heredity in the first place. Additional techniques that teachers might use to impart basic linear regression to students are shown in this history (Taylor & Francis., 2017). 
+<BR> <BR>
+The correlation of coefficient is a measure of how strong an association exists between two variables from a sample data. The range of values includes -1.0 to 1.0. If the computed number was more than 1.0 or less than -1.0 then there is an error in the computation process. A perfect strong negative correlation is represented by a correlation of -1.0, whereas a perfect strong positive correlation is represented by a correlation of 1.0. A correlation of 0.0 indicates that there is no correlation. It is represented as R (Investopedia., 2021).
+<BR>
+The correlation of determination is a measure that explains how variation in one variable can be explained by changes made on another variable. It is represented as R². The R² value can never be negative as it's a percentage value therefore it lies between 0 to 1. So, the higher the R² value the better. If we can an instance of R² value 0.70 that indicates that changes in x can explain 70% percent of the variation in y. Random variability is thought to account for the remaining 30% of the variance in y (Investopedia., 2021).
+<BR> <BR>
+Linear regression one of the building blocks of statistics. It is used to represent relationship between one or more variable based on their dependency. It is very much used in the real world as well. One such industry is the sports industry where data scientist might analyze how different amounts of weekly calisthenics session & body weight session affect the number of points a player score in the Football game. They might fit a multiple regression model using calisthenics and body weight sessions as the predictor variables and total points scored as the response (Z., 2020). 
+<BR> <BR>
+Points scored in the game = A0 + A1(calisthenics) + A2(bodyweight)
+<BR>
+The coefficient A0 represents the estimated points earned by a player who does no calisthenics and no body weight.
+<BR>
+If the number of weekly bodyweight sessions remained constant, the coefficient A1 would indicate the average change in points earned when weekly calisthenics is raised by one.
+<BR>
+If the number of weekly calisthenics stays constant, the coefficient A2 represents the average change in points earned when weekly bodyweight sessions are increased by one.
+<BR>
+In order to optimize points earned, data scientists may propose that a player engage in more or fewer weekly calisthenics and bodyweight workouts, depending on the values of A1 and A2.
+<BR> <BR>
+Multiple regression, also known as multiple linear regression, is a statistical technique that uses two or more explanatory variables to predict the outcome of a response variable. (Indeed., 2020) It can be used to analyze the relationship between a single dependent variable and several independent variables. The objective of multiple regression analysis is to use the independent variable whose values are known to predict the value of the single dependent value (Indeed Career Guide., 2020). 
+<BR> <BR>
+Multiple regression can be used in a variety of industries for instance, gaming industry. Imagine you're a game development company who is going to launch their game in the market in hopes that it will be a highly successful game. You believe you game will perform better in comparision to other game development firms which other game developers think as well. Multiple independent variables could affect the game's performance like level of difficulty, performance issue, release data, cost etc. Researchers can conduct a study to predict how a change in these variables will affect the game's whole performance. 
+<BR> <BR>
+Hypothesis tests are statistical procedures for putting a claim or assumption about a population's underlying distribution to the test using sample data. Following are the ways to do hypothesis testing in linear regression (Kumar A., 2022): <BR>
+Formulating the null and alternate hypotheses is the first phase in hypothesis testing. Based on that we get the H0 and Ha values which are used to conduct hypothesis testing. Then the linear regression formula values are calculated which gives the equation y = a + b1x1 + b2x2 + … (Depending on linear or multiple regression model). T test and F test values are then calculated by using their respective formula to get the values for linear or multiple regression. Then these test values are used to run the hypothesis test with a critical value which gives us information if we can reject the null hypothesis or we fail to reject the null hypothesis (Banerji A., 2022). <BR>
+For instance we can use hypothesis testing in gaming industry as well. Imagine you are a game developer who wants to create a game which is successful and which hold it's playerbase. You'll try to sell that game for maximum profits but multiple factors can affect that price range. These variables could be the game's performance, media coverage, not enough publicity, etc. We can build a prediction model for these independent variable to access the maximum sales you can achieve. We can then use hypothesis testing to find the correlation between these variable and then make changes based on the results we obtain. 
+<BR> <BR>
+Not only did I learn a lot about linear and multiple regression models during the final project, I also learned about concepts like hypothesis testing before regression analysis which helped me build me solid foundation about the topic and helped me learn about predictive analysis. I also learnt how correlation and determination operate, as well as how to apply that knowledge to data analysis. While working on this assignment, I improved my critical thinking and problem-solving skills. Learning about various tools for doing basic statistics, as well as graphic representations of those data, enabled me to become more creative, and I gained a lot of knowledge and self-confidence as a result <BR> <BR>
+R is helpful at every step of the data analysis process from gathering and cleaning data to analyzing it and reporting the conclusions. It has several advantages which helps both the beginners as well as experts in their analysis some of them are (Team T., 2021): <BR>
+1)	Free and open-source - As it's a free tool for analysis it's one of the major selling point for R as many people be it rich or poor can access it. <BR>
+2)	Extremely easy data wrangling - R has several packages that hugely simplify the process of preparing your data for analysis and its massive community support has resulted in a very large collection of libraries.  One line of code – and you create a separate dataset without any missing values, another line – and you impose multiple filters on your data. With such powerful capabilities, the time you spend on preparing your data for analysis can decrease significantly, giving you more time to spend it on the analysis itself (Edanz-Learning Team., 2022). <BR>
+3)	Advanced Visualization - Even the basic functionality of R allows you to create histograms, scatterplots, or line plots with only a tiny bit of code. However, if you spend some time learning more advanced visualization packages, such as ggplot2, for example, you’ll be able to build some very impressive graphs. R provides seemingly countless ways to visualize your data. These graphs will look very professional (Edanz-Learning Team., 2022).  <BR>
+
+
+<P>
+<FONT SIZE=4, COLOR="#1C88D0">
+<B>ANALYSIS SECTION</B>
+</FONT>
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+First task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a table and describe the given mpg dataset using the summarytool and psych library. </B>
+<P> </FONT>
+
+```{r First Task}
+
+sumtool_DS = summarytools::descr(Proj5_DS)
+psytool_DS = psych::describe(Proj5_DS) 
+
+DT::datatable(sumtool_DS, class = 'cell-border stripe', caption = "Summary tool package used to generate descriptive statistic") %>% 
+  formatRound("cty", 2) %>% 
+  formatRound("cyl", 2) %>% 
+  formatRound("displ", 2) %>% 
+  formatRound("hwy", 2) %>% 
+  formatRound("year", 2) 
+
+DT::datatable(psytool_DS, class = 'cell-border stripe', caption = "Psych package used to generate basic descriptive statistic of the mpg data set") %>% 
+  formatRound("mean", 2) %>% 
+  formatRound("sd", 2) %>% 
+  formatRound("median", 2) %>% 
+  formatRound("trimmed", 2) %>% 
+  formatRound("mad", 2) %>% 
+  formatRound("min", 2) %>% 
+  formatRound("max", 2) %>% 
+  formatRound("range", 2) %>% 
+  formatRound("skew", 2) %>% 
+  formatRound("kurtosis", 2) %>% 
+  formatRound("se", 2) 
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+This R Markdown project uses the "ggplot2" package to retrieve the "mpg" data collection. There are 234 rows and 11 columns in all. The column contains manufacturer, which is the car's manufacturer name, model, displ, which is the engine displacement in litres, year, which is the year of the car, cyl, which is the number of cylinders, trans, which is the transmission type, drv, which is the type of drive train, cty, which is the city miles per gallon, hwy, which is the highway miles per gallon, fl, which is the fuel type,
+<BR>
+The summarytool package was used to express the basic descriptive statistic for the mpg data set using the Desc function, and then it was represented in a DT table. The mean, median, maximum, minimum, standard deviation, CV, IQR, and multiple quantiles values for the numeric columns in the data set were shown after using the library. The mean was less than the median for both the cty and cyl variables, indicating that the distribution graph will be negatively skewed, while the mean was greater than the median for the displ and hwy variables, indicating that the distribution graph will be positively skewed, and the mean and median were equal for the year variable, indicating that it will have a normal distribution graph. 
+<BR>
+The psych library was used to express the fundamental descriptive statistic for the mpg data set using the describe function, and then it was represented in a DT table. After utilizing that library, it displayed the number of variables, mean, SD, median, trimmed data, max, min, range, and skewness for categorical values as well as numeric variables, which did not happen in the summarytool library as it only displayed the numerical values. The mean for the model and manufacturer, for example, was higher than the median, suggesting that the distribution graph would be positively skewed. Furthermore, the trimmed data did not differ substantially from the whole data set, suggesting that the data set contains few, if any, outliers.
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Second task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a table and present the basic statistic of displacement per cylinder for the data set. </B>
+<P> </FONT>
+            
+```{r Second Task}
+
+Displ_cylin = Proj5_DS %>% 
+  group_by(Displacement = cyl) %>%
+  summarise(Mean = mean(displ), 
+            SD = sd(displ),
+            Minimum = min(displ),
+            Maximum = max(displ))
+
+DT::datatable(Displ_cylin, class = 'cell-border stripe', caption = "Descriptive values of Displacement per cylinder Size") %>% 
+  formatRound("Mean", 3) %>% 
+  formatRound("SD", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+The group by function was used to the displacement per cylinder in the above table to get basic descriptive data such as mean, SD, max, and min values using the summarise function. The whole table was then presented as a DT table. Displacement or displ is the engine displacement value in litres in the used "mpg" data set. The mean displacement increased as the number of cylinders increased, and the same was true for the SD, max, and min values. Because it was the sole entry for that data set, the mean, max, and min values for 5 cylinder were all 2.5. As a result, the SD was also 0.
+
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Third task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a table and figure out coefficient of correlation and determination for the displacement and cylinder variables. </B>
+<P> </FONT>
+
+```{r Third Task}
+
+x_value1 = Proj5_DS$displ
+y_value1 = Proj5_DS$cyl
+num_val = nrow(Proj5_DS)
+xy_value1 = x_value1 * y_value1
+x2_value1 = x_value1 * x_value1
+y2_value1 = y_value1 * y_value1
+
+table_coeff1 = c(x_value1, x_value1, xy_value1, x2_value1, y2_value1)
+matrix_coeff1 = matrix(table_coeff1, ncol = 5, byrow = FALSE)
+matrix_coeff1_top6 = head(matrix_coeff1, 6)
+colnames(matrix_coeff1_top6) = c("x(Displacement)", "y(Cylinder)", "xy", "x^2", "y^2")
+
+Sx_val = sum(x_value1)
+Sy_val = sum(y_value1)
+Sxy_val = sum(xy_value1)
+Sx2_val = sum(x2_value1)
+Sy2_val = sum(y2_value1)
+
+R_coeff_value1 = (((num_val * Sx2_val) - (Sx_val ^ 2)) * ((num_val * Sy2_val) - (Sy_val ^ 2)))
+R_coeff_of_corre = ((num_val * Sxy_val) - (Sx_val * Sy_val)) / sqrt(R_coeff_value1)
+R_deter_of_corre = R_coeff_of_corre ^ 2 
+
+table_Rcoeff1 = c(R_coeff_of_corre, R_deter_of_corre)
+matrix_coeff2 = matrix(table_Rcoeff1, ncol = 2, byrow = FALSE)
+colnames(matrix_coeff2) = c("Coefficient of Correlation(R)", "Coefficient of Determination(R2)")
+rownames(matrix_coeff2) = "Displacement & cylinder"
+
+DT::datatable(matrix_coeff1_top6, class = 'cell-border stripe', caption = "First Six value used for Correlation of displacement & cylinder")
+
+DT::datatable(matrix_coeff2, class = 'cell-border stripe', caption = "Correlation and Displacement Values of Displacement & Cylinder") %>% 
+  formatRound("Coefficient of Correlation(R)", 3) %>% 
+  formatRound("Coefficient of Determination(R2)", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+The correlation coefficient formula was used for the first six values (to make the table more presentable) of the displacement (Independent on x) and cylinder (Dependent on y), and then xy, x2 & y2 were also calculated so that the coefficient of correlation and determination could be calculated from them in the first table. The second table used to present the coefficient of correlation, which was 0.930, and the coefficient of determination, which was 0.865. Then both of these tables were presented by using a DT table.
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Fourth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit the desctool library to present the displacement and cylinder values by using a desc function. </B>
+<P> </FONT>
+
+```{r Fourth Task}
+
+DescTools::Desc(mpg$cyl)
+DescTools::Desc(mpg$displ)
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+DescTools is a large set of various fundamental statistical functions for efficient data description that are not accessible in the R basic system 
+(Andri Signorell., 2020). The main purpose of this library is descriptive tasks in data analysis, such as computing descriptive statistics, producing graphical summaries, and reporting the findings. Not only does it represent the data set values in tabular form but it also graphically represent them by using line charts, boxplots and histogram for both numerical as well as categorical values (Datacamp., 2021). 
+<BR>
+In the first section, we performed descriptive analysis on the cylinder variable in the "mpg" dataset using the Desc function from the desctool package. The displacement of the engine in liters is represented by Displ. We can see from the histogram that 4 has the greatest frequency, followed by 6, and 5 has the lowest. We can also see from the boxplot that the median is higher than the mean, indicating that the distribution graph is negatively skewed. The cumulative percentage is pulled out for the cylinder variables in the final line graph, which finishes at 100% for the number 8.
+<BR>
+The Desc function in the desctool package was used to do descriptive analysis on the displacement variable in the "mpg" dataset in the second section. The number of cylinders is referred to as a cylinder. Analyzing the histogram, we can see that the majority of the data concentration is in the 1.5 to 4 region. Even the histogram line peaks in that region before gradually decreasing as time goes on. The boxplot shows that the mean is bigger than the median, indicating that the distribution graph is positively skewed. The cumulative percentage for the displacement variable is taken out in the final line graph, which finishes at 100% for the value 7.
+
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Fifth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a table and figure out the linear regression formula for cylinder and displacement. </B>
+<P> </FONT>
+
+```{r Fifth Task}
+
+#Linear regression formula between cyl(dependent) & displ(independent)
+linear_FIT_1 = lm(y_value1 ~ x_value1)
+
+#Summary of the linear regression data
+sum_linear_FIT_1 = summary(linear_FIT_1)
+
+#Using the summary data to extract intercept value for the regression line 
+a1_val = sum_linear_FIT_1$coefficients[1]
+
+#Using the summary data to extract slope value for the regression line 
+b1_val = sum_linear_FIT_1$coefficients[2]
+
+print(paste("Linear regression formula, y =", round(a1_val, 3), "+", round(b1_val, 2), "x1"))
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+The lm() function was used to extract the regression between the Dependent variable (cylinder on y axis) and the Independent variable (displacement on x axis) for the above task. The coefficients, which were the intercept(a1 val) and the slope(b1 val), were then extracted from the summarized regression data which was calculated by using the summary function on the regression line. After that, the linear regression formula y = ax + b was presented using print(paste) R code, with a value of 1.860 and b value of 1.160.
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Sixth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a scatterplot to represent the relation between displ and cyl. Also take out the mean, median for the displ variable. Also, make the graph visually appealing. </B>
+<P> </FONT>
+
+```{r Sixth Task}
+
+plot(Proj5_DS$displ ~ Proj5_DS$cyl,
+     las = 1,
+     pch = 8,
+     col = "#9916B3",
+     xlab = "cyl (Independent)",
+     ylab = "displ (Dependent)")
+
+abline(lm(Proj5_DS$displ ~ Proj5_DS$cyl),
+       col = "#DB512E",
+       lty = 1,
+       lwd = 2.5)
+
+abline(h = mean(Proj5_DS$displ),
+       col = "#2E2EDB",
+       lwd = 2.5)
+
+text(x = 7.5,
+     y = 3.7,
+     paste("Mean:", round(mean(Proj5_DS$displ), 3)),
+     cex = 0.6,
+     pos = 2)
+
+abline(h = median(Proj5_DS$displ),
+       col = "#2EDB3A",
+       lwd = 2.5)
+
+text(x = 7.5,
+     y = 3.1,
+     paste("Median:", round(median(Proj5_DS$displ), 3)),
+     cex = 0.6,
+     pos = 2)
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+Using the plot() function, a scatterplot was created to show the relationship between the disp(Dependent) and cyl(Independent) variables. The regression line between these two variables was then obtained using the abline function. The mean and median for the dependent variable are then calculated using the abline and text functions for the variable(Displacement). We can see from this scatterplot that as the number of cylinders grows, so does the displacement value. As a result, it's a positive regression line that peaks at 8 cylinders. The dependent variable's mean (displacement) was 3.472, and the median was 3.3, indicating that it is positively skewed distribution graph.
+
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Seventh task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a table and figure out the linear regression formula for cylinder and displacement for their predicted and residual values. Also, only represent the first 20 values. </B>
+<P> </FONT>
+
+```{r Seventh Task}
+
+y_val12 = Proj5_DS$displ
+Yp_val1 = a1_val + b1_val*x_value1
+Yres_val1 = y_val12 - Yp_val1
+
+table_regress1 = c(Yp_val1, Yres_val1) 
+matrix_regress1 = matrix(table_regress1, ncol = 2, byrow = FALSE)
+matrix_regress1_top6 = head(matrix_regress1, 20)
+
+colnames(matrix_regress1_top6) = c("Y predicted = ax + b", "Y residual")
+
+DT::datatable(matrix_regress1_top6, class = 'cell-border stripe', caption = "First 20 Linear regression formula values") %>% 
+  formatRound("Y predicted = ax + b", 3) %>% 
+  formatRound("Y residual", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+The y predicted value and y residual value were produced using the values given in the third task. The residual value came from subtracting the original y value from the y predicted value, and the y predicted value came from the formula y = ax + b (which is the formula for line where a is the slope, x is the x value which was displacement in the third job, and b is the y intercept value). Then, using a DT table, a matrix was formed to represent these data. To make the data set more comprehensible, just the top 20 values were shown. We can see from the table that the y predicted value increases with high displacement, and so some of these high displacement values have a negative y residual value.
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Eight task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a table and figure out the freq and percentage of cars based on their cylinder values. Also, make the table visually appealing. </B>
+<P> </FONT>
+
+```{r Eight Task}
+
+cyl_val = Proj5_DS$cyl
+table_cyl_val = table(cyl_val)
+df_cyl_val = as.data.frame(table_cyl_val) 
+
+df_cyl_val1 = df_cyl_val %>% 
+  mutate(CumFreq = cumsum(df_cyl_val$Freq)) %>%  
+  mutate(Percentage = df_cyl_val$Freq/ sum(df_cyl_val$Freq)*100) %>% 
+  mutate(CumPercentage = cumsum(Percentage))
+
+df_cyl_val1 %>% 
+  knitr::kable(digits = 2, caption = "Freq and Percentage table for cars based on cylinder") %>%
+  kable_material_dark("hover")
+
+```
+  
+<B><FONT SIZE=3, COLOR="#413425">
+To acquire the frequency values for the cylinder variable depending on the cars, a table was generated, which was then turned into a data frame. Then, using a mutate function, the data frame values were expanded by adding extra columns to capture those values as well, such as Cumulative Freq, Percentage, and Cumulative Percentage. Finally, the data set is presented using the knitr library, which was combined with the kable extra library to make the table more visually pleasant. We can see from the table that cars with four cylinders had the greatest frequency of 81, followed by cars with six and eight cylinders. Cars with five cylinders had the fewest, and the disparity between them and their peers was significant. This is shown in the Percentage column, where Freq for cars with four cylinders accounts for approximately 35% of the total, while Freq for cars with five cylinders accounts for just 1.7 percent of the whole. We can see from the cumulative frequency that it has taken 234 values towards the end, which is the total number of outcomes for the whole "mpg" dataset.
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Ninth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Using the information acquired in the previous task, exhibit a graphical representation of any number of variables. </B>
+<P> </FONT>
+
+```{r Ninth Task}
+
+par(mfrow=c(1,2), mai = c(0.8, 0.2, 0.2, 0.2))
+
+#Graphical representation for Freq of cars
+
+pie(df_cyl_val1$Freq,
+    radius = 0.7,
+    col = c("#332FC3", "#7FDB6C", "#802F26", "#C717C7"),
+    labels = df_cyl_val1$Freq,
+    main = "Piechart for Freq of Cylinders")
+
+legend("bottomleft",
+       legend = paste(unique(df_cyl_val1$cyl_val), "Cylinders"),
+       fill = c("#332FC3", "#7FDB6C", "#802F26", "#C717C7"),
+       border = "#2B1616")
+
+#Graphical representation for Percentage of cars
+
+bar_cyl = barplot(df_cyl_val1$Percentage,
+        horiz = T,
+        col = c("#5EC717", "#1D17C7", "#CC11DA", "#F0C828"),
+        xlim = c(0,45),
+        main = "Bargraph for Percentage of Cylinders",
+        border = "#F02843")
+
+text(round(df_cyl_val1$Percentage, 2), 
+     bar_cyl, 
+     round(df_cyl_val1$Percentage, 2),
+     cex = 1, 
+     pos = 4)
+
+title(xlab = "Percentage", line = 3, cex.lab = 1.5,  col.lab = "#4928F0")
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+Both the pie chart and the bar graph were placed next to each other using the par(mfrow) function. The frequency distribution of cars depending on their cylinder numbers was then displayed using the pie() function. Following that, a bar graph is plotted using the barplot() function to show the percentage of the data set that cylinders cover. 
+<BR>
+We can see from the pie chart that cars with four cylinders have the highest frequency of 81, followed by cars with six cylinders, and finally cars with eight cylinders. Last but not least, cars with five cylinders have the lowest frequency of four. According to the pie chart, cars with 4, 6, and 8 cylinders account for 30-33 percent of the total data set, whereas cars with 5 cylinders account for 2-3 percent. It's remarkable to observe that most cars have similar cylinder counts, despite the fact that cars with 5 cylinders are nowhere near that number. By looking at the bargraph we can confirm out estimate as we can see that cars with cylinders 4, 6, and 8 cover 34.62 percent, 33.76 percent, and 29.91 percent of the total data set, respectively, whereas cars with 5 cylinders only cover 1.71 percent.
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Tenth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a table and figure out the predictions for displacement if car has 2 & 10 cylinders. </B>
+<P> </FONT>
+
+```{r Tenth Task}
+
+#Calculating the predicted values for displacement from coefficients values which we obtained in task 5
+
+ypred_task10_val1 = a1_val + b1_val * 2
+ypred_task10_val2 = a1_val + b1_val * 10
+
+table_task10_all_valu = c(ypred_task10_val1, ypred_task10_val2)
+matrix_task10_all_valu = matrix(table_task10_all_valu, ncol = 2, byrow = FALSE)
+
+colnames(matrix_task10_all_valu ) = c("Cylinders = 2", "Cylinders = 10")
+rownames(matrix_task10_all_valu ) = "Displacement Value"
+
+DT::datatable(matrix_task10_all_valu, class = 'cell-border stripe', caption = "Displ value obtained from cyl value.") %>% 
+  formatRound("Cylinders = 2", 3) %>% 
+  formatRound("Cylinders = 10", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+The predicted displacement values were determined using the formula y = a + b1x1 and the coefficient values obtained in the fifth task. The y intercept value was a, and the slope was b1. Cars with two cylinders had a predicted displacement value of 4.181, while cars with ten cylinders had a predicted displacement value of 13.464; this was expected since cars with more cylinders had larger displacement value. A DT library table was then used to represent these values.
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Eleventh task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a table and figure out multiple regression analysis as well as hypothesis testing on the provided data set. </B>
+<P> </FONT>
+
+```{r Eleventh Task}
+
+multireg_task11 = lm(Proj6_MR$SystolicBP ~ Proj6_MR$Age + Proj6_MR$Weight)
+
+summary_task11 = summary(multireg_task11)
+
+aval_t11 = summary_task11$coefficients[1]
+b1val_t11 = summary_task11$coefficients[2]
+b2val_t11 = summary_task11$coefficients[3]
+
+cor_val1 = cor(Proj6_MR$SystolicBP, Proj6_MR$Age)
+cor_val2 = cor(Proj6_MR$SystolicBP, Proj6_MR$Weight)
+
+deter_val1 = cor_val1 ^ 2 
+deter_val2 = cor_val2 ^ 2 
+
+table_cor_deter = c(cor_val1, cor_val2, deter_val1, deter_val2)
+matrix_cor_deter = matrix(table_cor_deter, ncol = 2, byrow = FALSE)
+
+rownames(matrix_cor_deter) = c("Systollic Blood Pressure & Age" , "Systollic Blood Pressure & Weight")
+colnames(matrix_cor_deter) = c("Correlation Coefficient", "Determination Coefficient")
+
+#Multiple regression formula representation. 
+
+print(paste("Multiple regression formula, y =", round(aval_t11, 3), "+", round(b1val_t11, 3), "x1", "+", round(b2val_t11, 3), "x2"))
+
+DT::datatable(matrix_cor_deter, class = 'cell-border stripe', caption = "Correlation & Determination Coefficient values for the patient data set") %>% 
+  formatRound("Correlation Coefficient", 3) %>% 
+  formatRound("Determination Coefficient", 3)
+
+#Multiple R square and Multiple R 
+
+Multi_RSquareval = 0.9059
+Multi_Rval = sqrt(Multi_RSquareval)
+
+#F test value for the data set
+
+num_val = nrow(Proj6_MR)
+k = 2
+
+F_testval1 = (Multi_RSquareval / k) / ((1 - Multi_RSquareval) / (num_val - k - 1))
+
+alpha_val = 0.05
+dfN_val = num_val - k
+dfD_val = num_val - k - 1
+cv_val = qf(0.05, dfN_val, dfD_val, lower.tail = FALSE)
+
+test_value1 = F_testval1 > cv_val
+
+table_t11_val = table(Multi_RSquareval, Multi_Rval, F_testval1, cv_val, test_value1)
+df_t11_val = as.data.frame(table_t11_val)
+matrix_t11_val = matrix(df_t11_val, ncol = 6, byrow = TRUE)
+
+rownames(matrix_t11_val) = "Values"
+colnames(matrix_t11_val) = c("Multiple R Sqaure", "Multiple R", "F test", "Critical Value", "F test > Critical Value", "Frequency")
+
+DT::datatable(matrix_t11_val, class = 'cell-border stripe', caption = "Multiple R & R Sqaure value with the F test and Critical value") %>% 
+  formatRound("Multiple R Sqaure", 3) %>% 
+  formatRound("Multiple R", 3) %>% 
+  formatRound("F test", 3) %>% 
+  formatRound("Critical Value", 3) 
+
+y_val1 = aval_t11 + (b1val_t11 * 30) + (b2val_t11 * 148)
+y_val2 = aval_t11 + (b1val_t11 * 75) + (b2val_t11 * 196)
+
+table_t11_val2 = c(y_val1, y_val2)
+matrix_t11_val2 = matrix(table_t11_val2, ncol = 2, byrow = FALSE)
+
+rownames(matrix_t11_val2) = "Expected Systollic Blood Pressure for a person"
+colnames(matrix_t11_val2) = c("Age = 30 & Weight = 148", "Age = 75 & Weight = 196")
+
+DT::datatable(matrix_t11_val2, class = 'cell-border stripe', caption = "For the multiple linear regression y = a + b1x1 + b2x2 where a = Intercept value, b1 & b2 = Slope value, x1 = Age & x2 = Weight") %>% 
+  formatRound("Age = 30 & Weight = 148", 3) %>% 
+  formatRound("Age = 75 & Weight = 196", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+After the import of the provided data set, the summary function on the lm() function was used to extract values for the multiple regression formula from the dependent variable (SystolicBP) and independent variable (Age & Weight), which was then represented in the form y = a + b1x1 + b2x2. Using a DT table library, the coefficient of correlation and determination value for systolic blood pressure & age and systolic blood pressure & weight were also presented. <BR>
+Multiple R squared value was acquired using the same summary function, which came out to be 0.9059, which was utilized to determine the Multiple R value. These variables were used to calculate the F test value, which was 57.762, which was significantly higher than the Critical value of 2.660 (F test > CV = TRUE), indicating that we have enough evidence to reject the null hypothesis. As a result, the question based on your data analysis results? Can the systolic blood pressure be predicted using the other two variables? Yes as the F test value was greater than Critical value, as we have enough evidence to reject the null hypothesis which concludes that there is significant relationship between systolicBP, age & weight. All of these values were represented using a DT library table. <BR>
+Finally, using the multiple linear regression formula y = a + b1x1 + b2x2 gained during this task, the expected systolicBP for a person of age 30 and 75 with corresponding weights of 148 and 196 was computed, obtaining 105.550 and 161.733 respectively. A DT library was used to represent these values.
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Twelfth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a scatterplot for the dependent variable(systollicBP) for the independent variable (Age & Weight). Also, try to make the plot visually appealing. </B>
+<P> </FONT>
+
+```{r Twelfth Task}
+
+par(mfrow = c(1,2))
+
+#First scatter plot
+Reg_val1 = lm(Proj6_MR$SystolicBP ~ Proj6_MR$Age) #Regression line formula 
+
+plot(Proj6_MR$SystolicBP ~ Proj6_MR$Age,
+     pch = 10,
+     las = 1,
+     col = "#55D435",
+     ylab = "SystolicBP",
+     xlab = "Age",
+     main = "Scatter plot: SystolicBP&Age")
+
+abline(Reg_val1,
+       col = "#DA2D66")
+
+
+#Second scatter plot
+Reg_val2 = lm(Proj6_MR$SystolicBP ~ Proj6_MR$Weight) #Regression line formula 
+
+plot(Proj6_MR$SystolicBP ~ Proj6_MR$Weight,
+     pch = 10,
+     las = 1,
+     col = "#3A35D4",
+     ylab = "SystolicBP",
+     xlab = "Weight",
+     main = "Scatter plot: SystolicBP&Weight")
+
+abline(Reg_val2,
+       col = "#DA2D66")
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+The par(mfrow) function was used to get both the scatterplot on a single page next to each other. The regression line value was then calculated using the lm function between the dependent variable (SystolicBP on the y axis) and the independent variable (Age & Weight on the x axis). The scatterplot was created using the plot function, and the regression line between the data sets was obtained using the abline function. <BR> 
+The first scatterplot between SystolicBP and age shows that the two variables have a positive correlation. Most of the data set lies on the regression line which proves that it's a strong positive correlation. We can confirm this with the information we received in the previous task that the correlation coefficient between SystolicBP & age is 0.925 which a strong positive correlation. 
+<BR>
+The second scatterplot between SystolicBP and weight shows that the two variables have a positive correlation as well. Alot of data values lies on or near the regression line which confirms that it's a strong positive correlation. We can confirm this as well with the information we received in the previous task that the correlation coefficicent between SystolicBP & weight is 0.898 which a strong positive correlation. 
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Thirteen task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a table and figure out predicted and the residual value for the provided data set. </B>
+<P> </FONT>
+
+```{r Thirteen Task}
+
+t12_val = mutate(Proj6_MR,
+           ypredicted = aval_t11 + b1val_t11 * Proj6_MR$Age + b2val_t11 * Proj6_MR$Weight,
+           yresidual = Proj6_MR$SystolicBP - ypredicted)
+
+colnames(t12_val) = c("Patient ID", "SystollicBP(y)", "Age(x1)", "Weight(x2)", "Ypredicted value", "Yresidual value")
+
+DT::datatable(t12_val, class = 'cell-border stripe', caption = "Table to present the predicted and residual value for the multiple linear regression dataset") %>% 
+  formatRound("Ypredicted value", 3) %>% 
+  formatRound("Yresidual value", 3)
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+The y predicted and y residual value were calculated using the mutate function on the provided data set, using the dependent variable (SystolicBP on the y axis) and independent variable (Age & Weight on the x axis). Using the multiple regression formula y = a + b1x1 + b2x2, the y predicted value was produced, and the y residual was determined by subtracting the y predicted value from the original y value. (yres = ypredicted value - ypredicted value) These values were displayed using a DT library table.
+
+<B><FONT SIZE = 3, COLOR = "#D09A1C">
+Fourteenth task </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#D0401C">
+<B> Exhibit a scatterplot to display the residual value which we obtained in the previous task with respect to age & weight. Also, try to make the plot visually appealing. </B>
+<P> </FONT>
+
+```{r Fourteenth Task}
+
+par(mfrow = c(1,2))
+
+#First scatter plot
+Reg_val3 = lm(t12_val$`Yresidual value` ~ Proj6_MR$Age) #Regression line formula 
+
+plot(t12_val$`Yresidual value` ~ Proj6_MR$Age,
+     pch = 2,
+     las = 1,
+     col = "#35C4D4",
+     ylab = "Residual Value",
+     xlab = "Age",
+     main = "Scatter plot:Residual Value&Age")
+
+abline(Reg_val3,
+       col = "#DA2D66")
+
+
+#Second scatter plot
+Reg_val4 = lm(t12_val$`Yresidual value` ~ Proj6_MR$Weight) #Regression line formula 
+
+plot(t12_val$`Yresidual value` ~ Proj6_MR$Weight,
+     pch = 2,
+     las = 1,
+     col = "#D435CF",
+     ylab = "Residual Value",
+     xlab = "Weight",
+     main = "Scatter plot:Residual Value&Weight")
+
+abline(Reg_val4,
+       col = "#DA2D66")
+
+```
+
+<B><FONT SIZE=3, COLOR="#413425">
+The par(mfrow) function was used to get both the scatterplot on a single page next to each other. The regression line value was then calculated using the lm function between the dependent variable (y residual value on the y axis) and the independent variable (Age & Weight on the x axis).The scatterplot was created using the plot function, and the regression line between the data sets was obtained using the abline function. 
+<BR> 
+The first scatterplot between y residual value and age shows that the two variables have no correlation between them. Most of the data set lies below or above the regression line and the correlation line is on zero which proves that it has no correlation. The second scatterplot between y residual value and weight shows that the two variables have no correlation as well. Most of the data set lies below or above the regression line and the correlation line is on zero which proves that it has no correlation.
+
+<P>
+<FONT SIZE=4, COLOR="#1C88D0">
+<B>CONCLUSION</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#413425"> 
+<BR>
+To emphasize a few points, we utilized summarytool and the psych library to obtain the basic descriptive statistic for the full data set, however summarytool only allowed us to identify numerical values and did not provide information on categorical values. We also calculated the correlation and determination values between displacement and cylinder and used the mutate function to create a correlation table. For the cylinder variable in the data set, we used the Desctool package to obtain basic statistics as well as visual representations like as histograms, boxplots, and line graphs.Then, for the dependent and independent variables, we constructed linear regression formulas and built a scatterplot to depict their association. For this linear regression, we also calculated the expected and residual values, and then utilized a table to generate cumulative frequency and percentage figures for cars depending on cylinder. The values were then depicted using a piechart and a bar graph. After doing linear regression analysis, we performed multiple regression analysis, calculating the correlation and determination for the dependent variable (systolicBP) and independent variable (age) (Age & Weight). After that, we performed hypothesis testing by calculating the F test value and comparing it to the crucial value. A scatterplot was used to demonstrate the correlation between these values. Finally, for the whole data set, we constructed a table containing the y predicted and y residual values and plotted them against age and weight in a scatterplot. <BR>
+As a result of the inferential testing, my recommendation is that because the f test value is bigger than the critical value, there is a substantial correlation between systolicBP, age, and weight. If we don't take this into account and reject it, we'll produce a type 2 error. Also, because most cars have four, six, or eight cylinders, the market for a five-cylinder car is small. Perhaps we can enhance it by making some adjustments. <BR>
+Finally, I gained a better knowledge of linear and multiple regression, as well as the t and F tests used in these regression analyses. Not only that, but I also learnt about other libraries, such as the summarytool and desctool libraries, and how they aid in basic statistical analysis. I learned about predicted and residual values and how to present them in a table. Finally, I learned how to make a scatterplot and present a regression line in it to showcase correlation. 
+
+<P>
+<FONT SIZE=4, COLOR="#1C88D0">
+<B>BIBLIOGRAPHY</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#413425"> 
+<BR>
+1) Galton, Pearson, and the Peas: A Brief History of Linear Regression for Statistics Instructors. (2017). Taylor & Francis. https://www.tandfonline.com/doi/full/10.1080/10691898.2001.11910537 <BR>
+2) What Is the Correlation Coefficient? (2021, October 5). Investopedia. https://www.investopedia.com/terms/c/correlationcoefficient.asp#:%7E:text=The%20correlation%20coefficient%20is%20a,error%20in%20the%20correlation%20measurement. <BR>
+3) Z. (2020, May 19). 4 Examples of Using Linear Regression in Real Life. Statology. https://www.statology.org/linear-regression-real-life-examples/ <BR>
+4) Multiple Regression: Definition, Uses and 5 Examples. (2020). Indeed Career Guide. https://www.indeed.com/career-advice/career-development/multiple-regression <BR>
+5) Kumar, A. (2022, February 20). Linear regression hypothesis testing: Concepts, Examples. Data Analytics.  https://vitalflux.com/linear-regression-hypothesis-testing-examples/ <BR>
+6) Banerji, A. (2022, January 6). Hypothesis Testing On Linear Regression - Nerd For Tech. Medium. https://medium.com/nerd-for-tech/hypothesis-testing-on-linear-regression-c2a1799ba964 <BR>
+7) Team, T. (2021, July 6). Should you start learning R? Weigh the Pros and Cons of R programming. TechVidvan. https://techvidvan.com/tutorials/pros-and-cons-of-r/ <BR>
+8) Edanz-Learning-Team. (2022, February 1). Powerful Benefits of Using R to Analyze Your Research Data (and a Few Cautions). Edanz Learning Lab. https://learning.edanz.com/powerful-benefits-of-using-r-to-analyze-your-research-data-and-a-few-limitations/ <BR>
+9) Tools for Descriptive Statistics. (2020). Andri Signorell. https://andrisignorell.github.io/DescTools/ <BR>
+10) DescTools package - RDocumentation. (2021). Datacamp. https://www.rdocumentation.org/packages/DescTools/versions/0.99.44 <BR>

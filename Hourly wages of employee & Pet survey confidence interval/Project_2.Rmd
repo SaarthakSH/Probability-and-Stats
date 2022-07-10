@@ -1,0 +1,481 @@
+---
+title: ""
+output: html_document
+---
+
+```{r libraries, message=FALSE, warning=FALSE}
+
+library(kableExtra)
+library(knitr)
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(RColorBrewer)
+library(magrittr) 
+
+# Data set used
+
+Proj2_DS <- read_excel("Datasets/M2Data-1.xlsx")
+
+Proj2_DSpets <- read_excel("Datasets/M2Data-1.xlsx", 
+    sheet = "pets", col_names = FALSE)
+```
+
+<P>
+<FONT SIZE=4, COLOR="#222EDA">
+<B>INTRODUCTION</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#442E0D"> 
+<BR>
+Salary surveys are measures used to establish the median or average pay provided to people in one or more occupations. Pay data from multiple companies is reviewed to provide a better picture of the amount of money paid. Surveys may concentrate on one or more job descriptions, geographic locations, employer size, and/or sectors. (HR – Survey., 2021) <BR>
+Choosing suitable pay for workers might help save lives and death for a business. Compensation data is crucial in helping HR establish business pay rates, budget, and lead the recruitment and retention of great personnel, whether for lengthy or brief planning. In uncertain times, a firm must be extra careful about planning and controlling overall incentives spending. Including pay data from surveys into a regular evaluation of an organization's pay helps to prevent underpaying workers and also turnover and engagement issues. Furthermore, good compensation data may assist in minimizing overpay, which leads in a worse financial position.
+Confidence intervals are used in statistics to describe a range of values that are likely to include a population proportion with a particular degree of confidence. (Padilla J., 2021)
+<BR> <BR>
+To determine confidence intervals, use the following general formula:
+<BR> <BR>
+Confidence Interval = (point estimate) +/- (critical value)* (standard error)
+<BR> <BR>
+This formula generates an interval with a lower and upper limit that most likely includes a population proportion with a particular degree of confidence.
+<BR> <BR>
+Confidence Interval = [lower bound, higher bound]
+<BR> <BR>
+In biology, confidence intervals are commonly utilized. A scientist, for example, may well be interested in determining the average weight of a specific type of frog in Canada. Because it would take too long to weigh thousands of individual frogs, the scientist may instead gather a simple random sample of 50 frogs and calculate the mean and standard deviation of the frogs in the study. (Z., 2021)
+<BR>
+Another use for confidence intervals is in clinical studies, when a doctor may assume that a new medicine might lower blood pressure in patients. To put this to the test, he may invite 20 patients to take part in a one-month study of the new medicine. At the conclusion of the month, the doctor may note the mean drop in blood pressure and the standard deviation of the decrease in each patient in the study. (Z., 2021)
+<BR>
+Similarly, confidence intervals may be very beneficial in the gaming sector (something which I am interested in) as well. For example, we could evaluate 101 professional players to see what modifications can be done in the game to boost user retention while enhancing their gameplay experience. After the modifications have been applied, we may assess their impact on the players by determining whether there is an average decline in the player base as a result of the adjustments, and so on, in make the game more engaging.
+
+<P>
+<FONT SIZE=4, COLOR="#222EDA">
+<B>ANALYSIS SECTION</B>
+</FONT>
+
+<B><FONT SIZE = 3, COLOR = "#A9DA22">
+First task Part One </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#A222DA">
+<B> Exhibit a table and figure out confidence interval for various values. </B>
+<P> </FONT>
+
+```{r First Task Part One}
+
+All_col = data.frame(Acol = unlist(Proj2_DS))
+
+mean_all = mean(All_col$Acol, na.rm = TRUE)
+sd_all = sd(All_col$Acol, na.rm = TRUE)
+num = 247
+
+cl1 = 0.90
+cl2 = 0.92
+cl3 = 0.96
+
+cinv1 = round(qnorm((1 + cl1)/2), 3) 
+cinv2 = round(qnorm((1 + cl2)/2), 3) 
+cinv3 = round(qnorm((1 + cl3)/2), 3)
+
+sample_error = round(sd_all/sqrt(num), 3)
+
+margin_error1 = round(cinv1*sample_error, 3) 
+margin_error2 = round(cinv2*sample_error, 3) 
+margin_error3 = round(cinv3*sample_error, 3) 
+
+upper_limit_1 = round(mean_all + margin_error1, 3)
+upper_limit_2 = round(mean_all + margin_error2, 3)
+upper_limit_3 = round(mean_all + margin_error3, 3)
+
+lower_limit_1 = round(mean_all - margin_error1, 3)
+lower_limit_2 = round(mean_all - margin_error2, 3)
+lower_limit_3 = round(mean_all - margin_error3, 3)
+
+cf_width1 = round(upper_limit_1 - lower_limit_1, 3)
+cf_width2 = round(upper_limit_2 - lower_limit_2, 3) 
+cf_width3 = round(upper_limit_3 - lower_limit_3, 3)
+
+table_cinv = table(cinv1, cinv2, cinv3)
+dataframe1 = as.data.frame(table_cinv)
+matrix1 = matrix(dataframe1, nrow = 4, byrow = TRUE)
+
+table_error = table(margin_error1, margin_error2, margin_error3)
+dataframe2 = as.data.frame(table_error)
+matrix2 = matrix(dataframe2, nrow = 4, byrow = TRUE)
+
+table_upper = table(upper_limit_1, upper_limit_2, upper_limit_3)
+dataframe3 = as.data.frame(table_upper)
+matrix3 = matrix(dataframe3, nrow = 4, byrow = TRUE)
+
+table_lower = table(lower_limit_1, lower_limit_2, lower_limit_3)
+dataframe4 = as.data.frame(table_lower)
+matrix4 = matrix(dataframe4, nrow = 4, byrow = TRUE)
+
+table_width = table(cf_width1, cf_width2, cf_width3)
+dataframe5 = as.data.frame(table_width)
+matrix5 = matrix(dataframe5, nrow = 4, byrow = TRUE)
+
+matrix_all = cbind(matrix1, matrix2, matrix3, matrix4, matrix5)
+rownames(matrix_all) = c("90%", "92%", "96%", "Frequency")
+colnames(matrix_all) = c("Z Critical Value", "Margin Error", "Upper Limit", "Lower Limit", "Confidence Width")
+matrix_all_NAFreq = matrix_all[-4,] 
+DT::datatable(matrix_all_NAFreq, class = c('cell-border stripe', 'display'))
+
+```
+
+<B><FONT SIZE = 3, COLOR = "#A9DA22">
+First task Part Two</B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#A222DA">
+<B> Exhibit a table and figure out confidence interval for various values with sample size less than 30. </B>
+<P> </FONT>
+
+```{r First Task Part Two}
+
+mean_allstore = colMeans(Proj2_DS, na.rm = TRUE)
+sd_allstore = sapply(Proj2_DS, sd, na.rm = TRUE)
+
+grand_mean_allstore = mean(mean_allstore)
+grand_sd_allstore = sd(sd_allstore)
+
+cl4 = 0.90
+cl5 = 0.92
+cl6 = 0.96
+
+no = 20
+dfnum = no - 1
+
+cinv4 = round(qt((1 + cl1)/2, dfnum), 3) 
+cinv5 = round(qt((1 + cl2)/2, dfnum), 3)  
+cinv6 = round(qt((1 + cl3)/2, dfnum), 3) 
+
+sample_error = round(grand_sd_allstore/sqrt(no), 3)
+
+margin_error4 = round(cinv4*sample_error, 3) 
+margin_error5 = round(cinv5*sample_error, 3) 
+margin_error6 = round(cinv6*sample_error, 3) 
+
+upper_limit_4 = round(grand_mean_allstore + margin_error4, 3)
+upper_limit_5 = round(grand_mean_allstore + margin_error5, 3)
+upper_limit_6 = round(grand_mean_allstore + margin_error6, 3)
+
+lower_limit_4 = round(grand_mean_allstore - margin_error4, 3)
+lower_limit_5 = round(grand_mean_allstore - margin_error5, 3)
+lower_limit_6 = round(grand_mean_allstore - margin_error6, 3)
+
+cf_width4 = round(upper_limit_4 - lower_limit_4, 3)
+cf_width5 = round(upper_limit_5 - lower_limit_5, 3) 
+cf_width6 = round(upper_limit_6 - lower_limit_6, 3)
+
+table_cinv = table(cinv4, cinv5, cinv6)
+dataframe1 = as.data.frame(table_cinv)
+matrix1 = matrix(dataframe1, nrow = 4, byrow = TRUE)
+
+table_error = table(margin_error4, margin_error5, margin_error6)
+dataframe2 = as.data.frame(table_error)
+matrix2 = matrix(dataframe2, nrow = 4, byrow = TRUE)
+
+table_upper = table(upper_limit_4, upper_limit_5, upper_limit_6)
+dataframe3 = as.data.frame(table_upper)
+matrix3 = matrix(dataframe3, nrow = 4, byrow = TRUE)
+
+table_lower = table(lower_limit_4, lower_limit_5, lower_limit_6)
+dataframe4 = as.data.frame(table_lower)
+matrix4 = matrix(dataframe4, nrow = 4, byrow = TRUE)
+
+table_width = table(cf_width4, cf_width5, cf_width6)
+dataframe5 = as.data.frame(table_width)
+matrix5 = matrix(dataframe5, nrow = 4, byrow = TRUE)
+
+matrix_all = cbind(matrix1, matrix2, matrix3, matrix4, matrix5)
+rownames(matrix_all) = c("90%", "92%", "96%", "Frequency")
+colnames(matrix_all) = c("T Critical Value", "Margin Error", "Upper Limit", "Lower Limit", "Confidence Width")
+matrix_all_NAFreq = matrix_all[-4,] 
+DT::datatable(matrix_all_NAFreq, class = c('cell-border stripe', 'display'))
+
+```
+
+<B><FONT SIZE = 3, COLOR = "#A9DA22">
+First task Part Three </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#A222DA">
+<B> Observations for the above two task </B>
+<P> </FONT>
+<B><FONT SIZE=3, COLOR="#442E0D">
+By comparing the two tables above, we could see that the Z critical value is smaller than the T critical value, but the margin of error is greater. One explanation for this might be because we are considering the grand mean of all the means of each store instead of the whole total sample of 247 in the z critical value since the sample size is less than 20. As a result, the margin of error in the T Critical value is lower since we are taking the grand mean of the mean of each store. When comparing the Z critical value to the T critical value, the confidence breadth is approximately twice. The explanation for this is the same: the margin of error in the T critical value is approximately half that of the Z critical value. 
+
+<B><FONT SIZE=3, COLOR="#2986A8">
+Reference: (Statistical Globe., 2022) for unlist function. & (Z Statology., 2021) for colmeans function <BR>
+
+<B><FONT SIZE = 3, COLOR = "#A9DA22">
+First task Part Four </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#A222DA">
+<B> Exhibit a density plot for the 92% Confidence Level value. </B>
+<P> </FONT>
+
+```{r First Task Part Four}
+
+cl2 = 0.92
+z92R = qnorm((1 + cl2)/2)
+value_92R = (z92R * sd_all) + mean_all 
+
+z92L = qnorm((1 - cl2)/2)
+value_92L = (z92L * sd_all) + mean_all
+
+density(All_col$Acol, adjust = 1, na.rm = TRUE) %>% 
+  plot(col = "#B61CC1",
+       main = "Density plot for 92% Confidence Level")
+
+abline(v = mean_all,
+       col = "#DAA922")
+
+text(x = mean_all + 0.3,
+     y = 0.1,
+     paste("Mean =",round(mean_all, 2)),
+     col = "#30357A",
+     pos = 2,
+     cex = 0.9)
+
+abline(v = value_92R,
+       col = "#22DAB5")
+
+text(x = value_92R + 0.3,
+     y = 0.08,
+     paste("Upper Limit =",round(value_92R, 2)),
+     col = "#6B307A",
+     pos = 2,
+     cex = 0.9)
+
+abline(v = value_92L,
+       col = "#225FDA")
+
+text(x = value_92L + 0.3,
+     y = 0.04,
+     pos = 2,
+     paste("Lower Limit =",round(value_92L, 2)),
+     col = "#305C7A",
+     cex = 0.9)
+
+text(x = value_92R + 0.3,
+     y = 0.1,
+     pos = 4,
+     paste("Confidence Level 92%"),
+     col = "#DA4722",
+     cex = 0.6)
+
+```
+
+<B><FONT SIZE = 3, COLOR = "#A9DA22">
+First task Part Five </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#A222DA">
+<B> Exhibit multiple boxplots for the all the store values. Also, make them graphically representable. </B>
+<P> </FONT>
+
+```{r fig.width = 16, fig.height = 12}
+
+# First Task Part Five
+
+box1 = boxplot.stats(Proj2_DS$`Store 1`)$stats
+box2 = boxplot.stats(Proj2_DS$`Store 2`)$stats
+box3 = boxplot.stats(Proj2_DS$`Store 3`)$stats
+box4 = boxplot.stats(Proj2_DS$`Store 4`)$stats
+box5 = boxplot.stats(Proj2_DS$`Store 5`)$stats
+box6 = boxplot.stats(Proj2_DS$`Store 6`)$stats
+box7 = boxplot.stats(Proj2_DS$`Store 7`)$stats
+box8 = boxplot.stats(Proj2_DS$`Store 8`)$stats
+box9 = boxplot.stats(Proj2_DS$`Store 9`)$stats
+box10 = boxplot.stats(Proj2_DS$`Store 10`)$stats
+box11 = boxplot.stats(Proj2_DS$`Store 11`)$stats
+box12 = boxplot.stats(Proj2_DS$`Store 12`)$stats
+box13 = boxplot.stats(Proj2_DS$`Store 13`)$stats
+box14 = boxplot.stats(Proj2_DS$`Store 14`)$stats
+box15 = boxplot.stats(Proj2_DS$`Store 15`)$stats
+box16 = boxplot.stats(Proj2_DS$`Store 16`)$stats
+box17 = boxplot.stats(Proj2_DS$`Store 17`)$stats
+box18 = boxplot.stats(Proj2_DS$`Store 18`)$stats
+box19 = boxplot.stats(Proj2_DS$`Store 19`)$stats
+box20 = boxplot.stats(Proj2_DS$`Store 20`)$stats
+
+matrix_all_values = rbind(box1, box2, box3, box4, box5, box6, box7, box8, box9, box10, box11, box12, box13, box14, box15, box16, box17, box18, box19, box20)
+
+matrix_box = matrix(matrix_all_values, nrow = 5, byrow = TRUE)
+
+boxplot(matrix_box,
+        cex.axis = 0.6,
+        boxwex = 0.4,
+        col = brewer.pal(12, "Set3"),
+        las = 1,
+        main = "Boxplot for each store quartiles value")
+
+text(y = round(matrix_all_values, 2),
+     labels = round(matrix_all_values, 2),
+     x = c(0.4, 2.6, 3.6, 4.6, 5.6, 6.6, 7.6, 8.6, 9.6, 10.6, 11.6, 12.6, 13.6,
+           14.6, 15.6, 16.6, 17.6, 18.6, 19.6, 20.6),
+     cex = 0.6)
+
+points(mean_allstore, 
+       pch = 18, 
+       col = "#911F27", 
+       lwd = 7)
+
+text(y = mean_allstore,
+     labels = round(mean_allstore, 2),
+     x = c(0.4, 2.6, 3.6, 4.6, 5.6, 6.6, 7.6, 8.6, 9.6, 10.6, 11.6, 12.6, 13.6,
+           14.6, 15.6, 16.6, 17.6, 18.6, 19.6, 20.6),
+     col = "#CE3741",
+     cex = 0.6)
+
+```
+
+<B><FONT SIZE = 3, COLOR = "#A9DA22">
+First task Part Six </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#A222DA">
+<B> Observations for the above two task. </B>
+<P> </FONT>
+<B><FONT SIZE=3, COLOR="#442E0D">
+We can see from the density map at the 92 percent confidence level that the mean is 11.81, but the spread between the upper and lower limits is very large. Furthermore, the bulk of the graph values are between 6.12 and 17.5, which are the bottom and maximum limits, respectively. Not only that, but the density map is slightly tilted to the right, indicating that mean is bigger than the median. <BR>
+We can see from the boxplot that shop 20 has the highest spread, while store 7 has the least spread. Also, the wage survey numbers in shop 7 are quite near to one other, therefore the boxplot is collapsed since there isn't much variation in the statistics. There were no outliers in any of the boxplots, therefore all of the wage numbers from each shop are normal. Aside from shop 7, store 8 does not have much spread, yet these two are the only distinguishable stores when compared to others. Stores 14 and 9 are comparable to shop 20 in that they have a wide range. Because the mean of the majority of the shops is larger than the median, the majority of the boxplots are positively skewed.
+
+<B><FONT SIZE = 3, COLOR = "#A9DA22">
+Second Task Part One </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#A222DA">
+<B> Exhibit a table and figure out confidence interval for various values which are categorical in nature. </B>
+<P> </FONT>
+
+```{r Second Task Part One}
+
+proj2_pets = data.frame(Bcol = unlist(Proj2_DSpets))
+
+yes_pets = sum(proj2_pets$Bcol == 'Yes')
+
+no_pets = sum(proj2_pets$Bcol == 'No')
+
+mean_pets_yes = (yes_pets)/(yes_pets + no_pets)
+mean_pets_no = (no_pets)/(yes_pets + no_pets)
+
+cl7 = 0.90
+cl8 = 0.92
+cl9 = 0.96
+no2 = 204
+
+cinv7 = round(qnorm((1 + cl7)/2), 3) 
+cinv8 = round(qnorm((1 + cl8)/2), 3) 
+cinv9 = round(qnorm((1 + cl9)/2), 3)
+
+margin_error7 = round(cinv7 * sqrt(mean_pets_yes*mean_pets_no/no2), 3) 
+margin_error8 = round(cinv8 * sqrt(mean_pets_yes*mean_pets_no/no2), 3) 
+margin_error9 = round(cinv9 * sqrt(mean_pets_yes*mean_pets_no/no2), 3) 
+
+upper_limit_7 = round(mean_pets_yes + margin_error7, 3)
+upper_limit_8 = round(mean_pets_yes + margin_error8, 3)
+upper_limit_9 = round(mean_pets_yes + margin_error9, 3)
+
+lower_limit_7 = round(mean_pets_yes - margin_error7, 3)
+lower_limit_8 = round(mean_pets_yes - margin_error8, 3)
+lower_limit_9 = round(mean_pets_yes - margin_error9, 3)
+
+cf_width7 = round(upper_limit_7 - lower_limit_7, 3)
+cf_width8 = round(upper_limit_8 - lower_limit_8, 3) 
+cf_width9 = round(upper_limit_9 - lower_limit_9, 3)
+
+cf_width4 = round(upper_limit_4 - lower_limit_4, 3)
+cf_width5 = round(upper_limit_5 - lower_limit_5, 3) 
+cf_width6 = round(upper_limit_6 - lower_limit_6, 3)
+
+table_cinv = table(cinv7, cinv8, cinv9)
+dataframe1 = as.data.frame(table_cinv)
+matrix1 = matrix(dataframe1, nrow = 4, byrow = TRUE)
+
+table_error = table(margin_error7, margin_error8, margin_error9)
+dataframe2 = as.data.frame(table_error)
+matrix2 = matrix(dataframe2, nrow = 4, byrow = TRUE)
+
+table_upper = table(upper_limit_7, upper_limit_8, upper_limit_9)
+dataframe3 = as.data.frame(table_upper)
+matrix3 = matrix(dataframe3, nrow = 4, byrow = TRUE)
+
+table_lower = table(lower_limit_7, lower_limit_8, lower_limit_9)
+dataframe4 = as.data.frame(table_lower)
+matrix4 = matrix(dataframe4, nrow = 4, byrow = TRUE)
+
+table_width = table(cf_width7, cf_width8, cf_width9)
+dataframe5 = as.data.frame(table_width)
+matrix5 = matrix(dataframe5, nrow = 4, byrow = TRUE)
+
+matrix_all = cbind(matrix1, matrix2, matrix3, matrix4, matrix5)
+rownames(matrix_all) = c("90%", "92%", "96%", "Frequency")
+colnames(matrix_all) = c("Z Critical Value", "Margin Error", "Upper Limit", "Lower Limit", "Confidence Width")
+matrix_all_NAFreq = matrix_all[-4,] 
+DT::datatable(matrix_all_NAFreq, class = c('cell-border stripe', 'display'))
+
+```
+
+<B><FONT SIZE=3, COLOR="#442E0D">
+Looking at the table for the number of pets people own, the Z critical value increases with the confidence interval, with it being 2.054 for the 96 percent confidence interval, which means that with more confidence, the area under the curve is getting covered and very few values are being left out, which is why the margin of error increases with the confidence interval, and the same thing is happening for the confidence width, which is why the 96 percent width is the smallest.
+
+<B><FONT SIZE = 3, COLOR = "#A9DA22">
+Second Task Part Two </B>
+<BR> 
+<FONT SIZE = 3, COLOR = "#A222DA">
+<B> Exhibit a piechart and barplot for the given data set representing their frequencies and percentages respectively. </B>
+<P> </FONT>
+
+```{r Second Task Part Two}
+
+par(mfrow = c(1,2))
+
+perc = round(table(proj2_pets)/nrow(proj2_pets) *100, 3)
+
+pie(perc,
+    labels = perc,
+    radius = 0.8,
+    col = c("#581D1D", "#127906"),
+    main = "Piechart for people who own pets")
+
+legend("bottomleft",
+       legend = rownames(table(proj2_pets)),
+       fill = c("#581D1D", "#127906"),
+       border = "#1F471A")
+
+b_pets = barplot(table(proj2_pets),
+        col = c("#E6AE12", "#1243E6"),
+        las = 1,
+        xlim = c(0,120),
+        horiz = T,
+        border = "#E6126E",
+        main = "Barplot for people who own pets")
+
+text(table(proj2_pets),
+     b_pets,
+     table(proj2_pets),
+     cex = 0.8,
+     pos = 4)
+
+```
+
+<B><FONT SIZE=3, COLOR="#442E0D">
+Looking at the piechart, we can observe that those who own pets are fewer than those who do not. There are 49 percent who own pets and 51 percent who do not own pets, so it's almost a 50-50 split when it comes to pet owners.<BR>
+Looking at the barplot, we can see that the sample we chose had 100 pet owners and 104 persons who do not own pets.
+
+<P>
+<FONT SIZE=4, COLOR="#222EDA">
+<B>CONCLUSION</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#442E0D"> 
+<BR>
+To emphasize a few key points, t he z score value is smaller than the t score value in the two tables that we constructed using z critical value and t critical value for the same salary survey dataset using two different approaches. However, the z score value has a larger margin of error than the t score value. In addition, for the 92 percent confidence interval, we generated a density plot where the mean was bigger than the median, thus the plot was skewed significantly to the right. In the boxplot, shop 20 had the greatest spread of wage range, but store 7 had such a little spread that the boxplot was collapsed. There was roughly a 50-50 split in the sample of individuals who own pets and those who don't own pets for the category data of people who own pets.<BR>
+As a consequence, my advice towards the salary survey for shops 7 and 8 is to broaden the compensation range and strive to pay more to employees who work harder/longer shifts rather than giving everyone the same amount. Also, b ecause roughly half of all people own dogs, we should consider taking certain commercial steps, such as allowing pets to enter restaurants and other establishments. <BR>
+Finally, I gained a better knowledge of the confidence interval, Z value, T value, margin of error, upper/lower limit, and confidence width. Not only did I learn how to correctly construct 20 boxplots on a single graph while providing suitable labels, mean value, and dealing with density plots. I also learnt how to cope with missing data by using the na.rm function, as well as how to use the unlist function to combine all of the columns into a single one.
+
+<P>
+<FONT SIZE=4, COLOR="#222EDA">
+<B>REFERENCES</B>
+</FONT>
+<B><FONT SIZE=3, COLOR="#442E0D"> 
+<BR>
+1) Salary and Compensation Surveys from HR-Survey.com. (2021). HR-Survey. https://hr-survey.com/SalarySurvey.htm <BR>
+2)Padilla, J. (2021, May 5). The Importance of Salary Survey Data. Archbright. https://www.archbright.com/blog/the-importance-of-salary-survey-data <BR>
+3) Z. (2021, May 5). 4 Examples of Confidence Intervals in Real Life. Statology. https://www.statology.org/confidence-interval-real-life-example/ <BR>
+4) R unlist Function | 3 Example Codes (List of Vectors, Data Frame & String). (2022, January 10). Statistics Globe. <BR> https://statisticsglobe.com/r-unlist-example-vector-data-frame-string/
+5) Z. (2021b, August 12). How to Use colMeans() Function in R. Statology. <BR>
+
